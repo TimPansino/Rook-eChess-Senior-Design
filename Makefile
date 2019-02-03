@@ -1,5 +1,5 @@
 ##
-## Makefile 
+## Makefile
 ##
 
 ## Define compiler
@@ -8,7 +8,7 @@ CC	= gcc
 
 ## Define flags
 
-CFLAGS	= -Wall -Werror -O3 -g
+CFLAGS	= -Wall -O3 -g
 
 ## Define targets
 
@@ -23,7 +23,7 @@ main: main.o
 
 ## rule to clean up object files and executable so that you can rebuild
 
-clean:	
+clean:
 	rm -rf *.o main
 
 ## rule to compile .c to .o
