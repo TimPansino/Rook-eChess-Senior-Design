@@ -13,13 +13,13 @@ CFLAGS	= -Wall -O3 -g
 ## Define targets
 
 default: run
-all: main
-run: all
+all: main.o debug.o
+run: main
 	./main
 	$(MAKE) clean
 
-main: main.o
-	$(CC) $(CFLAGS) main.o -o main
+main: all
+	$(CC) $(CFLAGS) main.o debug.o -o main
 
 ## rule to clean up object files and executable so that you can rebuild
 

@@ -6,3 +6,12 @@
 #define Pawn 'P'
 #define White 1
 #define Black 2
+
+// Type Declarations
+typedef struct Piece_S {
+  char type;
+  char side;
+  char promotion;
+} Piece;
+typedef Piece B[8][8];
+typedef char M[8][8];
