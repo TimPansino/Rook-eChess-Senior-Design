@@ -12,6 +12,7 @@ typedef struct Piece_S {
   char type;
   char side;
   char promotion;
+  char unmoved;
 } Piece;
 typedef Piece B[8][8];
 typedef char M[8][8];
