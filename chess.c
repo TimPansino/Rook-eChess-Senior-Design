@@ -103,7 +103,7 @@ int possible_moves(B board, M moves, int row, int col) {
 
   switch(p->type) {
     case 'P':
-      // TODO: Enpassante, double moves.
+      // TODO: Enpassante
       // Set pawn direction
       if (p->side == White) new_row = row + 1;
       else new_row = row - 1;
@@ -113,6 +113,21 @@ int possible_moves(B board, M moves, int row, int col) {
         if (board[col][new_row].side == 0) {
           moves[col][new_row] = 1;
           ret += 1;
+          if (p->unmoved) {
+            if (p->side == White) {
+              if (board[col][new_row + 1].side == 0) {
+                moves[col][new_row + 1] = 1;
+                ret += 1;
+              }
+            }
+            else {
+              if (board[col][new_row - 1].side == 0) {
+                moves[col][new_row - 1] = 1;
+                ret += 1;
+              }
+            }
+
+          }
         }
 
         // Left
