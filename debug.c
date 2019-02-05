@@ -1,6 +1,7 @@
 // Includes
 #include <stdio.h>
 #include "pieces.h"
+#include "chess.h"
 #include "debug.h"
 
 // Functions
