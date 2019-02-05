@@ -3,35 +3,53 @@
 #include "pieces.h"
 #include "chess.h"
 #include "debug.h"
+#include "micro.h"
 
 // Functions
 int main(int argc, char** argv) {
+  /*
   B cur_board;
+  B prev_board;
   M moves;
-
-  // TEMP
   int test_row;
   int test_col;
   int source_row;
   int source_col;
+  int origin_row;
+  int origin_col;
 
   blank_board(cur_board);
   //print_board(cur_board);
 
   default_board(cur_board);
+  //copy_board(prev_board, cur_board);
   //print_board(cur_board);
 
-  source_row = 0;
-  source_col = 1;
-  test_row = 0;
-  test_col = 1;
+
+  source_row = 3;
+  source_col = 4;
+  test_row = 7;
+  test_col = 0;
+  origin_row = 0;
+  origin_col = 4;
+
+  move_piece(cur_board, origin_row, origin_col, source_row, source_col);
+  copy_board(prev_board, cur_board);
+  print_board(prev_board);
+
+  valid_moves(prev_board, moves, source_row, source_col);
+  print_moves(prev_board, moves);
 
   move_piece(cur_board, source_row, source_col, test_row, test_col);
   print_board(cur_board);
+  printf("Valid Move: %d\n\n", is_possible(cur_board, prev_board, 1));
 
-  valid_moves(cur_board, moves, test_row, test_col);
-  print_moves(cur_board, moves);
 
-  printf("White Check Status: %d\n\n", check_status(cur_board, White));
+  printf("White Check Status: %d\n", check_status(cur_board, White));
   printf("Black Check Status: %d\n\n", check_status(cur_board, Black));
+  */
+
+  valid_moves_test();
+
+  return 0;
 }
