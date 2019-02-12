@@ -10,3 +10,5 @@ int valid_moves(B board, M moves, int row, int col);
 int is_possible(B new_board, B old_board, int side);
 int diff_boards(B new_board, B old_board, M diff);
 void copy_board(B new_board, B old_board);
+int can_move(B board, char side);
+int game_status(B board, char side);

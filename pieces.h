@@ -1,3 +1,4 @@
+// Numeric Definitions
 #define Knight 'N'
 #define King 'K'
 #define Queen 'Q'

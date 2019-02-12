@@ -1,4 +1,5 @@
 // Includes
+#include <stdio.h>
 #include "pieces.h"
 #include "chess.h"
 
@@ -447,8 +448,8 @@ int check_status(B board, char side){
   M moves;
   Piece* p;
   int check = 0;
-  int stale = 2;
 
+  // Scan board
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       p = &board[j][i];
@@ -456,18 +457,12 @@ int check_status(B board, char side){
         possible_moves(board, moves, i, j);
         if (p->side != side) {
           for (int jj = 0; jj < 8; jj++) {
+            if (check) break;
             for (int ii = 0; ii < 8; ii++) {
               if ((moves[jj][ii] == 2) && (board[jj][ii].type == 'K')){
                 check = 1;
+                break;
               }
-            }
-          }
-        }
-        else {
-          for (int jj = 0; jj < 8; jj++) {
-            for (int ii = 0; ii < 8; ii++) {
-              // TODO: Check for stalemate
-              stale = 0;
             }
           }
         }
@@ -475,7 +470,42 @@ int check_status(B board, char side){
     }
   }
 
-  return check + stale;
+  return check;
+}
+
+int game_status(B board, char side) {
+  int check = check_status(board, side);
+  int stale;
+
+  switch(side) {
+    case White:
+      stale = !can_move(board, Black);
+      break;
+    case Black:
+      stale = !can_move(board, White);
+      break;
+    default:
+      stale = 0;
+      break;
+  }
+
+  return check + (stale << 1);
+}
+
+int can_move(B board, char side) {
+  M moves;
+
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      if ((board[i][j].side == side) && (valid_moves(board, moves, i, j))) {
+        //TODO: FIX THIS
+        printf("ROW: %d | COL: %d\n", j, i);
+        return 1;
+      }
+    }
+  }
+
+  return 0;
 }
 
 int is_possible(B new_board, B old_board, int side) {
