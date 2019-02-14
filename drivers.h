@@ -18,4 +18,5 @@ typedef char Color;
 typedef Color C[8][8];
 
 // Function Declarations
-void blank_colors(C board);
+void blankColors(C board);
+void updateLeds(C curBoard, C prevBoard) {

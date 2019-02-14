@@ -6,7 +6,7 @@
 #include "debug.h"
 
 // Functions
-void print_board(B board) {
+void printBoard(B board) {
   char c;
 
   printf("   0  1  2  3  4  5  6  7\n");
@@ -30,7 +30,7 @@ void print_board(B board) {
   return;
 }
 
-void print_moves(B board, M moves) {
+void printMoves(B board, M moves) {
   char c;
 
   printf("   0  1  2  3  4  5  6  7\n");
@@ -60,7 +60,7 @@ void print_moves(B board, M moves) {
   return;
 }
 
-void print_colors(C board) {
+void printColors(C board) {
   char c;
 
   printf("   0  1  2  3  4  5  6  7\n");
@@ -104,7 +104,7 @@ void print_colors(C board) {
   return;
 }
 
-void print_color(C c, int x, int y) {
+void printColor(C c, int x, int y) {
   char red = (c[y][x] & RED) >> R_SHIFT;
   char green = (c[y][x] & GREEN) >> G_SHIFT;
   char blue = (c[y][x] & BLUE) >> B_SHIFT;

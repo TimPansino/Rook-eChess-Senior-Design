@@ -6,87 +6,87 @@
 #include "debug.h"
 //#include "micro.h"
 
-int test_chess_library(void);
-int test_led_drivers(void);
+int testChessLibrary(void);
+int testLedDrivers(void);
 
 // Functions
 int main(int argc, char** argv) {
-  //test_led_drivers();
-  test_chess_library();
+  //testLedDrivers();
+  testChessLibrary();
 
   return 0;
 }
 
-int test_led_drivers(void) {
+int testLedDrivers(void) {
   C colors;
-  B cur_board;
-  B prev_board;
+  B curBoard;
+  B prevBoard;
   M moves;
 
-  int source_row;
-  int source_col;
+  int sourceRow;
+  int sourceCol;
 
-  blank_board(cur_board);
-  default_board(cur_board);
-  blank_board(prev_board);
-  default_board(prev_board);
+  blankBoard(curBoard);
+  defaultBoard(curBoard);
+  blankBoard(prevBoard);
+  defaultBoard(prevBoard);
 
-  source_row = 0;
-  source_col = 4;
+  sourceRow = 0;
+  sourceCol = 4;
 
-  init_piece(&cur_board[source_col][source_row], 0, 0, 0);
-  print_board(cur_board);
+  initPiece(&curBoard[sourceCol][sourceRow], 0, 0, 0);
+  printBoard(curBoard);
 
-  blank_colors(colors);
-  colors[source_col][source_row] = YELLOW;
-  print_colors(colors);
-  print_color(colors, source_row, source_col);
+  blankColors(colors);
+  colors[sourceCol][sourceRow] = YELLOW;
+  printColors(colors);
+  printColor(colors, sourceRow, sourceCol);
 
   return 0;
 }
 
-int test_chess_library(void) {
-  B cur_board;
-  B prev_board;
+int testChessLibrary(void) {
+  B curBoard;
+  B prevBoard;
   M moves;
-  int test_row;
-  int test_col;
-  int source_row;
-  int source_col;
-  int origin_row;
-  int origin_col;
+  int testRow;
+  int testCol;
+  int sourceRow;
+  int sourceCol;
+  int originRow;
+  int originCol;
 
-  blank_board(cur_board);
-  //print_board(cur_board);
+  blankBoard(curBoard);
+  //printBoard(curBoard);
 
-  default_board(cur_board);
-  //copy_board(prev_board, cur_board);
-  //print_board(cur_board);
+  defaultBoard(curBoard);
+  //copyBoard(prevBoard, curBoard);
+  //printBoard(curBoard);
 
   // Test Chess Library
-  origin_row = 0;
-  origin_col = 4;
-  source_row = 3;
-  source_col = 2;
-  test_row = 6;
-  test_col = 2;
-  move_piece(cur_board, 0, 2, 4, 0);
+  originRow = 0;
+  originCol = 4;
+  sourceRow = 3;
+  sourceCol = 2;
+  testRow = 6;
+  testCol = 2;
+  movePiece(curBoard, 0, 2, 4, 0);
 
-  move_piece(cur_board, origin_row, origin_col, source_row, source_col);
-  copy_board(prev_board, cur_board);
-  print_board(prev_board);
-  prev_board[source_col][source_row].unmoved = 1;
+  movePiece(curBoard, originRow, originCol, sourceRow, sourceCol);
+  copyBoard(prevBoard, curBoard);
+  printBoard(prevBoard);
+  prevBoard[sourceCol][sourceRow].unmoved = 1;
 
-  valid_moves(prev_board, moves, source_row, source_col);
-  print_moves(prev_board, moves);
+  validMoves(prevBoard, moves, sourceRow, sourceCol);
+  printMoves(prevBoard, moves);
 
-  move_piece(cur_board, source_row, source_col, test_row, test_col);
-  print_board(cur_board);
-  printf("Valid Move: %d\n\n", is_possible(cur_board, prev_board, White));
+  movePiece(curBoard, sourceRow, sourceCol, testRow, testCol);
+  printBoard(curBoard);
+  printf("Valid Move: %d\n\n", isPossible(curBoard, prevBoard, White));
 
 
-  //printf("White Check Status: %d\n", game_status(cur_board, White));
-  printf("Black Check Status: %d\n\n", game_status(cur_board, Black));
+  //printf("White Check Status: %d\n", gameStatus(curBoard, White));
+  printf("Black Check Status: %d\n\n", gameStatus(curBoard, Black));
 
   return 0;
 }

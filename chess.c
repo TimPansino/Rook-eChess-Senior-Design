@@ -4,45 +4,45 @@
 #include "chess.h"
 
 // Function Definitions
-void default_board(B board) {
-  blank_board(board);
+void defaultBoard(B board) {
+  blankBoard(board);
 
-  init_piece(&board[0][0], Rook, White, 0);
-  init_piece(&board[1][0], Knight, White, 0);
-  init_piece(&board[2][0], Bishop, White, 0);
-  init_piece(&board[3][0], King, White, 0);
-  init_piece(&board[4][0], Queen, White, 0);
-  init_piece(&board[5][0], Bishop, White, 0);
-  init_piece(&board[6][0], Knight, White, 0);
-  init_piece(&board[7][0], Rook, White, 0);
-  init_piece(&board[0][1], Pawn, White, 0);
-  init_piece(&board[1][1], Pawn, White, 0);
-  init_piece(&board[2][1], Pawn, White, 0);
-  init_piece(&board[3][1], Pawn, White, 0);
-  init_piece(&board[4][1], Pawn, White, 0);
-  init_piece(&board[5][1], Pawn, White, 0);
-  init_piece(&board[6][1], Pawn, White, 0);
-  init_piece(&board[7][1], Pawn, White, 0);
-  init_piece(&board[0][6], Pawn, Black, 0);
-  init_piece(&board[1][6], Pawn, Black, 0);
-  init_piece(&board[2][6], Pawn, Black, 0);
-  init_piece(&board[3][6], Pawn, Black, 0);
-  init_piece(&board[4][6], Pawn, Black, 0);
-  init_piece(&board[5][6], Pawn, Black, 0);
-  init_piece(&board[6][6], Pawn, Black, 0);
-  init_piece(&board[7][6], Pawn, Black, 0);
-  init_piece(&board[0][7], Rook, Black, 0);
-  init_piece(&board[1][7], Knight, Black, 0);
-  init_piece(&board[2][7], Bishop, Black, 0);
-  init_piece(&board[3][7], King, Black, 0);
-  init_piece(&board[4][7], Queen, Black, 0);
-  init_piece(&board[5][7], Bishop, Black, 0);
-  init_piece(&board[6][7], Knight, Black, 0);
-  init_piece(&board[7][7], Rook, Black, 0);
+  initPiece(&board[0][0], Rook, White, 0);
+  initPiece(&board[1][0], Knight, White, 0);
+  initPiece(&board[2][0], Bishop, White, 0);
+  initPiece(&board[3][0], King, White, 0);
+  initPiece(&board[4][0], Queen, White, 0);
+  initPiece(&board[5][0], Bishop, White, 0);
+  initPiece(&board[6][0], Knight, White, 0);
+  initPiece(&board[7][0], Rook, White, 0);
+  initPiece(&board[0][1], Pawn, White, 0);
+  initPiece(&board[1][1], Pawn, White, 0);
+  initPiece(&board[2][1], Pawn, White, 0);
+  initPiece(&board[3][1], Pawn, White, 0);
+  initPiece(&board[4][1], Pawn, White, 0);
+  initPiece(&board[5][1], Pawn, White, 0);
+  initPiece(&board[6][1], Pawn, White, 0);
+  initPiece(&board[7][1], Pawn, White, 0);
+  initPiece(&board[0][6], Pawn, Black, 0);
+  initPiece(&board[1][6], Pawn, Black, 0);
+  initPiece(&board[2][6], Pawn, Black, 0);
+  initPiece(&board[3][6], Pawn, Black, 0);
+  initPiece(&board[4][6], Pawn, Black, 0);
+  initPiece(&board[5][6], Pawn, Black, 0);
+  initPiece(&board[6][6], Pawn, Black, 0);
+  initPiece(&board[7][6], Pawn, Black, 0);
+  initPiece(&board[0][7], Rook, Black, 0);
+  initPiece(&board[1][7], Knight, Black, 0);
+  initPiece(&board[2][7], Bishop, Black, 0);
+  initPiece(&board[3][7], King, Black, 0);
+  initPiece(&board[4][7], Queen, Black, 0);
+  initPiece(&board[5][7], Bishop, Black, 0);
+  initPiece(&board[6][7], Knight, Black, 0);
+  initPiece(&board[7][7], Rook, Black, 0);
   return;
 }
 
-void blank_moves(M board) {
+void blankMoves(M board) {
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
       board[i][j] = 0;
@@ -50,7 +50,7 @@ void blank_moves(M board) {
   }
 }
 
-void blank_board(B board) {
+void blankBoard(B board) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       board[i][j].type = 0;
@@ -60,14 +60,14 @@ void blank_board(B board) {
   }
 }
 
-void init_piece(Piece* p, char type, char side, char promotion) {
+void initPiece(Piece* p, char type, char side, char promotion) {
   p->type = type;
   p->side = side;
   p->promotion = promotion;
   p->unmoved = 1;
 }
 
-void move_piece(B board, int row1, int col1, int row2, int col2) {
+void movePiece(B board, int row1, int col1, int row2, int col2) {
   if ((row1 == row2) && (col1 == col2)) {
     return;
   }
@@ -84,13 +84,13 @@ void move_piece(B board, int row1, int col1, int row2, int col2) {
   return;
 }
 
-int possible_moves(B board, M moves, int row, int col) {
+int possibleMoves(B board, M moves, int row, int col) {
   int ret = 0;
   Piece* p;
-  int new_col;
-  int new_row;
+  int newCol;
+  int newRow;
 
-  blank_moves(moves);
+  blankMoves(moves);
 
   if ((row > 7) || (row < 0)) {
     return 0;
@@ -106,24 +106,24 @@ int possible_moves(B board, M moves, int row, int col) {
     case 'P':
       // TODO: Enpassante
       // Set pawn direction
-      if (p->side == White) new_row = row + 1;
-      else new_row = row - 1;
+      if (p->side == White) newRow = row + 1;
+      else newRow = row - 1;
 
-      if ((new_row < 8) && ((new_row) >= 0)) {
+      if ((newRow < 8) && ((newRow) >= 0)) {
         // Forward
-        if (board[col][new_row].side == 0) {
-          moves[col][new_row] = 1;
+        if (board[col][newRow].side == 0) {
+          moves[col][newRow] = 1;
           ret += 1;
           if (p->unmoved) {
             if (p->side == White) {
-              if (board[col][new_row + 1].side == 0) {
-                moves[col][new_row + 1] = 1;
+              if (board[col][newRow + 1].side == 0) {
+                moves[col][newRow + 1] = 1;
                 ret += 1;
               }
             }
             else {
-              if (board[col][new_row - 1].side == 0) {
-                moves[col][new_row - 1] = 1;
+              if (board[col][newRow - 1].side == 0) {
+                moves[col][newRow - 1] = 1;
                 ret += 1;
               }
             }
@@ -132,19 +132,19 @@ int possible_moves(B board, M moves, int row, int col) {
         }
 
         // Left
-        new_col = col - 1;
-        if ((new_col < 8) && ((new_col) >= 0)) {
-          if ((board[new_col][new_row].side != 0) && (board[new_col][new_row].side != p->side)) {
-            moves[new_col][new_row] = 2;
+        newCol = col - 1;
+        if ((newCol < 8) && ((newCol) >= 0)) {
+          if ((board[newCol][newRow].side != 0) && (board[newCol][newRow].side != p->side)) {
+            moves[newCol][newRow] = 2;
             ret += 1;
           }
         }
 
         // Right
-        new_col = col + 1;
-        if ((new_col < 8) && ((new_col) >= 0)) {
-          if ((board[new_col][new_row].side != 0) && (board[new_col][new_row].side != p->side)) {
-            moves[new_col][new_row] = 2;
+        newCol = col + 1;
+        if ((newCol < 8) && ((newCol) >= 0)) {
+          if ((board[newCol][newRow].side != 0) && (board[newCol][newRow].side != p->side)) {
+            moves[newCol][newRow] = 2;
             ret += 1;
           }
         }
@@ -156,15 +156,15 @@ int possible_moves(B board, M moves, int row, int col) {
 
     case 'B':
       // Down Right
-      new_row = row;
-      new_col = col;
-      while ((++new_col < 8) && (++new_row < 8)) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while ((++newCol < 8) && (++newRow < 8)) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -174,15 +174,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Up Right
-      new_row = row;
-      new_col = col;
-      while ((++new_col < 8) && (--new_row >= 0)) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while ((++newCol < 8) && (--newRow >= 0)) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -192,15 +192,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Down Left
-      new_row = row;
-      new_col = col;
-      while ((--new_col >= 0) && (++new_row < 8)) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while ((--newCol >= 0) && (++newRow < 8)) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -210,15 +210,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Up Left
-      new_row = row;
-      new_col = col;
-      while ((--new_col >= 0) && (--new_row >= 0)) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while ((--newCol >= 0) && (--newRow >= 0)) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -234,15 +234,15 @@ int possible_moves(B board, M moves, int row, int col) {
 
     case 'R':
       // Right
-      new_row = row;
-      new_col = col;
-      while (++new_col < 8) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while (++newCol < 8) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -252,15 +252,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Left
-      new_row = row;
-      new_col = col;
-      while (--new_col >= 0) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while (--newCol >= 0) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -270,15 +270,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Down
-      new_row = row;
-      new_col = col;
-      while (++new_row < 8) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while (++newRow < 8) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -288,15 +288,15 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Up
-      new_row = row;
-      new_col = col;
-      while (--new_row >= 0) {
-        if(board[new_col][new_row].side == 0) {
-          moves[new_col][new_row] = 1;
+      newRow = row;
+      newCol = col;
+      while (--newRow >= 0) {
+        if(board[newCol][newRow].side == 0) {
+          moves[newCol][newRow] = 1;
           ret += 1;
         }
-        else if(board[new_col][new_row].side != p->side) {
-          moves[new_col][new_row] = 2;
+        else if(board[newCol][newRow].side != p->side) {
+          moves[newCol][newRow] = 2;
           ret += 1;
           break;
         }
@@ -309,17 +309,17 @@ int possible_moves(B board, M moves, int row, int col) {
     case 'K':
     // TODO: Add castling.
       // Down
-      new_row = row + 1;
-      if (new_row < 8) {
+      newRow = row + 1;
+      if (newRow < 8) {
         for(int i = -1; i < 2; i++) {
-          new_col = col + i;
-          if ((new_col < 8) && (new_col >= 0)) {
-            if(board[new_col][new_row].side == 0) {
-              moves[new_col][new_row] = 1;
+          newCol = col + i;
+          if ((newCol < 8) && (newCol >= 0)) {
+            if(board[newCol][newRow].side == 0) {
+              moves[newCol][newRow] = 1;
               ret += 1;
             }
-            else if(board[new_col][new_row].side != p->side) {
-              moves[new_col][new_row] = 2;
+            else if(board[newCol][newRow].side != p->side) {
+              moves[newCol][newRow] = 2;
               ret += 1;
             }
           }
@@ -327,17 +327,17 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Up
-      new_row = row - 1;
-      if (new_row >= 8) {
+      newRow = row - 1;
+      if (newRow >= 8) {
         for(int i = -1; i < 2; i++) {
-          new_col = col + i;
-          if ((new_col < 8) && (new_col >= 0)) {
-            if(board[new_col][new_row].side == 0) {
-              moves[new_col][new_row] = 1;
+          newCol = col + i;
+          if ((newCol < 8) && (newCol >= 0)) {
+            if(board[newCol][newRow].side == 0) {
+              moves[newCol][newRow] = 1;
               ret += 1;
             }
-            else if(board[new_col][new_row].side != p->side) {
-              moves[new_col][new_row] = 2;
+            else if(board[newCol][newRow].side != p->side) {
+              moves[newCol][newRow] = 2;
               ret += 1;
             }
           }
@@ -345,17 +345,17 @@ int possible_moves(B board, M moves, int row, int col) {
       }
 
       // Middle
-      new_row = row;
-      if (new_row < 8) {
+      newRow = row;
+      if (newRow < 8) {
         for(int i = -1; i < 2; i++) {
-          new_col = col + i;
-          if ((i != 0) && (new_col < 8) && (new_col >= 0)) {
-            if(board[new_col][new_row].side == 0) {
-              moves[new_col][new_row] = 1;
+          newCol = col + i;
+          if ((i != 0) && (newCol < 8) && (newCol >= 0)) {
+            if(board[newCol][newRow].side == 0) {
+              moves[newCol][newRow] = 1;
               ret += 1;
             }
-            else if(board[new_col][new_row].side != p->side) {
-              moves[new_col][new_row] = 2;
+            else if(board[newCol][newRow].side != p->side) {
+              moves[newCol][newRow] = 2;
               ret += 1;
             }
           }
@@ -367,20 +367,20 @@ int possible_moves(B board, M moves, int row, int col) {
 
     case 'N':
       for (int i = -2; i <= 2; i++) {
-        new_row = row + i;
-        if ((new_row < 8) && (new_row >= 0)) {
+        newRow = row + i;
+        if ((newRow < 8) && (newRow >= 0)) {
           switch(i) {
             case 2:
             case -2:
               for (int j = -1; j <= 1; j += 2) {
-                new_col = col + j;
-                if ((new_col < 8) && (new_col >= 0)) {
-                  if (board[new_col][new_row].side == 0) {
-                    moves[new_col][new_row] = 1;
+                newCol = col + j;
+                if ((newCol < 8) && (newCol >= 0)) {
+                  if (board[newCol][newRow].side == 0) {
+                    moves[newCol][newRow] = 1;
                     ret += 1;
                   }
-                  else if (board[new_col][new_row].side != p->side) {
-                    moves[new_col][new_row] = 2;
+                  else if (board[newCol][newRow].side != p->side) {
+                    moves[newCol][newRow] = 2;
                     ret += 1;
                   }
                 }
@@ -390,14 +390,14 @@ int possible_moves(B board, M moves, int row, int col) {
             case 1:
             case -1:
               for (int j = -2; j <= 2; j += 4) {
-                new_col = col + j;
-                if ((new_col < 8) && (new_col >= 0)) {
-                  if (board[new_col][new_row].side == 0) {
-                    moves[new_col][new_row] = 1;
+                newCol = col + j;
+                if ((newCol < 8) && (newCol >= 0)) {
+                  if (board[newCol][newRow].side == 0) {
+                    moves[newCol][newRow] = 1;
                     ret += 1;
                   }
-                  else if (board[new_col][new_row].side != p->side) {
-                    moves[new_col][new_row] = 2;
+                  else if (board[newCol][newRow].side != p->side) {
+                    moves[newCol][newRow] = 2;
                     ret += 1;
                   }
                 }
@@ -410,26 +410,26 @@ int possible_moves(B board, M moves, int row, int col) {
       break;
 
     default:
-      blank_moves(moves);
+      blankMoves(moves);
       return 0;
   }
 
   return ret;
 }
 
-int valid_moves(B board, M moves, int row, int col) {
+int validMoves(B board, M moves, int row, int col) {
   char side = board[col][row].side;
   int ret = 0;
 
   // Retrieve possible moves
-  possible_moves(board, moves, row, col);
+  possibleMoves(board, moves, row, col);
 
   // Determine if move is illegal based on check
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if (moves[j][i] != 0) {
         ret += 1;
-        switch(check_status(board, side)) {
+        switch(checkStatus(board, side)) {
           case 1: // Check
           case 3: // Checkmate
             moves[j][i] = 0;
@@ -444,7 +444,7 @@ int valid_moves(B board, M moves, int row, int col) {
   return ret;
 }
 
-int check_status(B board, char side){
+int checkStatus(B board, char side){
   M moves;
   Piece* p;
   int check = 0;
@@ -454,7 +454,7 @@ int check_status(B board, char side){
     for (int i = 0; i < 8; i++) {
       p = &board[j][i];
       if (p->side != 0) {
-        possible_moves(board, moves, i, j);
+        possibleMoves(board, moves, i, j);
         if (p->side != side) {
           for (int jj = 0; jj < 8; jj++) {
             if (check) break;
@@ -473,16 +473,16 @@ int check_status(B board, char side){
   return check;
 }
 
-int game_status(B board, char side) {
-  int check = check_status(board, side);
+int gameStatus(B board, char side) {
+  int check = checkStatus(board, side);
   int stale;
 
   switch(side) {
     case White:
-      stale = !can_move(board, Black);
+      stale = !canMove(board, Black);
       break;
     case Black:
-      stale = !can_move(board, White);
+      stale = !canMove(board, White);
       break;
     default:
       stale = 0;
@@ -492,12 +492,12 @@ int game_status(B board, char side) {
   return check + (stale << 1);
 }
 
-int can_move(B board, char side) {
+int canMove(B board, char side) {
   M moves;
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((board[i][j].side == side) && (valid_moves(board, moves, i, j))) {
+      if ((board[i][j].side == side) && (validMoves(board, moves, i, j))) {
         //TODO: FIX THIS
         printf("ROW: %d | COL: %d\n", j, i);
         return 1;
@@ -508,51 +508,51 @@ int can_move(B board, char side) {
   return 0;
 }
 
-int is_possible(B new_board, B old_board, int side) {
+int isPossible(B newBoard, B oldBoard, int side) {
   M diff;
   M moves;
-  int diff_ct;
+  int diffCt;
 
-  int dest_row1 = -1;
-  int dest_col1 = -1;
-  int dest_row2 = -1;
-  int dest_col2 = -1;
+  int destRow1 = -1;
+  int destCol1 = -1;
+  int destRow2 = -1;
+  int destCol2 = -1;
 
-  int source_row1 = -1;
-  int source_col1 = -1;
-  int source_row2 = -1;
-  int source_col2 = -1;
+  int sourceRow1 = -1;
+  int sourceCol1 = -1;
+  int sourceRow2 = -1;
+  int sourceCol2 = -1;
 
-  diff_ct = diff_boards(new_board, old_board, diff);
+  diffCt = diffBoards(newBoard, oldBoard, diff);
 
-  if (diff_ct == 0) {
+  if (diffCt == 0) {
     return 1;
   }
-  else if ((diff_ct > 4) || (diff_ct < 0)) {
+  else if ((diffCt > 4) || (diffCt < 0)) {
     return 0;
   }
   else {
     for (int j = 0; j < 8; j++) {
       for (int i = 0; i < 8; i++) {
         if (diff[i][j] == 1) {
-          if (new_board[i][j].side == side) {
-            if (dest_col1 == -1) {
-                dest_row1 = j;
-                dest_col1 = i;
+          if (newBoard[i][j].side == side) {
+            if (destCol1 == -1) {
+                destRow1 = j;
+                destCol1 = i;
             }
             else {
-              dest_row2 = j;
-              dest_col2 = i;
+              destRow2 = j;
+              destCol2 = i;
             }
           }
-          else if (new_board[i][j].side == 0) {
-            if (source_col1 == -1) {
-                source_row1 = j;
-                source_col1 = i;
+          else if (newBoard[i][j].side == 0) {
+            if (sourceCol1 == -1) {
+                sourceRow1 = j;
+                sourceCol1 = i;
             }
             else {
-              source_row2 = j;
-              source_col2 = i;
+              sourceRow2 = j;
+              sourceCol2 = i;
             }
           }
         }
@@ -560,14 +560,14 @@ int is_possible(B new_board, B old_board, int side) {
     }
   }
 
-  if ((source_row2 == -1) && (dest_row2 == -1)) {
-    if (valid_moves(old_board, moves, source_row1, source_col1)) {
-      if (moves[dest_col1][dest_row1]) {
+  if ((sourceRow2 == -1) && (destRow2 == -1)) {
+    if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
+      if (moves[destCol1][destRow1]) {
         return 1;
       }
     }
   }
-  else if ((source_row2 != -1) && (dest_row2 != -1)){
+  else if ((sourceRow2 != -1) && (destRow2 != -1)){
     //TODO: Castling
     return 1;
   }
@@ -580,12 +580,12 @@ int is_possible(B new_board, B old_board, int side) {
   return 0;
 }
 
-int diff_boards(B new_board, B old_board, M diff) {
+int diffBoards(B newBoard, B oldBoard, M diff) {
   int ret = 0;
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((new_board[i][j].type != old_board[i][j].type) && (new_board[i][j].side != old_board[i][j].side)) {
+      if ((newBoard[i][j].type != oldBoard[i][j].type) && (newBoard[i][j].side != oldBoard[i][j].side)) {
         diff[i][j] = 1;
         ret += 1;
       }
@@ -598,13 +598,13 @@ int diff_boards(B new_board, B old_board, M diff) {
   return ret;
 }
 
-void copy_board(B new_board, B old_board) {
+void copyBoard(B newBoard, B oldBoard) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      new_board[i][j].type = old_board[i][j].type;
-      new_board[i][j].side = old_board[i][j].side;
-      new_board[i][j].promotion = old_board[i][j].promotion;
-      new_board[i][j].unmoved = old_board[i][j].unmoved;
+      newBoard[i][j].type = oldBoard[i][j].type;
+      newBoard[i][j].side = oldBoard[i][j].side;
+      newBoard[i][j].promotion = oldBoard[i][j].promotion;
+      newBoard[i][j].unmoved = oldBoard[i][j].unmoved;
     }
   }
 

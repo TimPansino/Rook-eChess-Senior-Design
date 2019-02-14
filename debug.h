@@ -1,4 +1,4 @@
-void print_board(B board);
-void print_moves(B board, M moves);
-void print_colors(C board);
-void print_color(C c, int x, int y);
+void printBoard(B board);
+void printMoves(B board, M moves);
+void printColors(C board);
+void printColor(C c, int x, int y);
