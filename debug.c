@@ -9,9 +9,32 @@
 void printBoard(B board) {
   char c;
 
-  printf("   0  1  2  3  4  5  6  7\n");
-  for (int j = 0; j < 8; j++) {
-    printf("%d:", j);
+  printf(" ");
+  if (PRINT_TYPE) {
+    for (int i = 0; i < 8; i++) {
+      printf("  %c", 'A' + i);
+    }
+  }
+  else {
+    for (int i = 0; i < 8; i++) {
+      printf("  %d", i);
+    }
+  }
+  printf("\n");
+
+  for (int k = 0; k < 8; k++) {
+    int j;
+
+    switch (PRINT_TYPE) {
+      case 0: 
+        j = k;
+        break;
+      case 1:
+        j = 7 - k;
+        break;
+    }
+
+    printf("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       if (board[i][j].side == 1) {
         c = board[i][j].type;
@@ -33,9 +56,32 @@ void printBoard(B board) {
 void printMoves(B board, M moves) {
   char c;
 
-  printf("   0  1  2  3  4  5  6  7\n");
-  for (int j = 0; j < 8; j++) {
-    printf("%d:", j);
+  printf(" ");
+  if (PRINT_TYPE) {
+    for (int i = 0; i < 8; i++) {
+      printf("  %c", 'A' + i);
+    }
+  }
+  else {
+    for (int i = 0; i < 8; i++) {
+      printf("  %d", i);
+    }
+  }
+  printf("\n");
+
+  for (int k = 0; k < 8; k++) {
+    int j;
+
+    switch (PRINT_TYPE) {
+      case 0:
+        j = k;
+        break;
+      case 1:
+        j = 7 - k;
+        break;
+    }
+
+    printf("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       switch(moves[i][j]) {
         case -1:
@@ -63,9 +109,32 @@ void printMoves(B board, M moves) {
 void printColors(C board) {
   char c;
 
-  printf("   0  1  2  3  4  5  6  7\n");
-  for (int j = 0; j < 8; j++) {
-    printf("%d:", j);
+  printf(" ");
+  if (PRINT_TYPE) {
+    for (int i = 0; i < 8; i++) {
+      printf("  %c", 'A' + i);
+    }
+  }
+  else {
+    for (int i = 0; i < 8; i++) {
+      printf("  %d", i);
+    }
+  }
+  printf("\n");
+
+  for (int k = 0; k < 8; k++) {
+    int j;
+
+    switch (PRINT_TYPE) {
+      case 0:
+        j = k;
+        break;
+      case 1:
+        j = 7 - k;
+        break;
+    }
+
+    printf("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       switch(board[i][j]) {
         case RED:
@@ -110,4 +179,33 @@ void printColor(C c, int x, int y) {
   char blue = (c[y][x] & BLUE) >> B_SHIFT;
 
   printf("Address (%d, %d): %d%d%d\n", x, y, red, green, blue);
+}
+
+void printTurn(int side) {
+  switch (side) {
+    case White:
+      printf("Current Turn: White\n");
+      break;
+    case Black:
+      printf("Current Turn: Black\n");
+      break;
+    default:
+      printf("Current Turn: INVALID\n");
+      break;
+  }
+}
+
+int charToCoord(char c) {
+  if (c >= 'A' && c <= 'H') {
+    return c - 'A';
+  }
+  else if (c >= 'a' && c <= 'h') {
+    return c - 'a';
+  }
+  else if (c >= '1' && c <= '8') {
+    return c - '1';
+  }
+  else {
+    return -1;
+  }
 }
