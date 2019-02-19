@@ -26,7 +26,7 @@ void printBoard(B board) {
     int j;
 
     switch (PRINT_TYPE) {
-      case 0: 
+      case 0:
         j = k;
         break;
       case 1:
@@ -88,10 +88,10 @@ void printMoves(B board, M moves) {
           c = board[i][j].type;
           break;
         case 1:
+        case 3:
           c = 'O';
           break;
         case 2:
-        case 3:
           c = board[i][j].type + 32;
           break;
         default:

@@ -9,13 +9,15 @@
 
 int testChessLibrary(void);
 int testLedDrivers(void);
+int testCastling(void);
 int inputTest(void);
 
 // Functions
 int main(int argc, char** argv) {
   //testLedDrivers();
   //testChessLibrary();
-  inputTest();
+  //inputTest();
+  testCastling();
 
   return 0;
 }
@@ -94,6 +96,37 @@ int testChessLibrary(void) {
   return 0;
 }
 
+int testCastling(void) {
+  B curBoard;
+  M moves;
+  C colors;
+
+  defaultBoard(curBoard);
+  blankColors(colors);
+
+  initPiece(&curBoard[1][0], 0, 0, 0);
+  initPiece(&curBoard[2][0], 0, 0, 0);
+  initPiece(&curBoard[3][0], 0, 0, 0);
+  initPiece(&curBoard[5][0], 0, 0, 0);
+  initPiece(&curBoard[6][0], 0, 0, 0);
+
+  printBoard(curBoard);
+  printColors(colors);
+
+  validMoves(curBoard, moves, 0, 4);
+  printMoves(curBoard, moves);
+
+  if (moves[5][0] != 0) {
+    movePiece(curBoard, 0, 4, 0, 6);
+    printBoard(curBoard);
+  }
+  else {
+    printf("Castling failed.\n");
+  }
+
+  return 0;
+}
+
 int inputTest(void) {
   char c[20];
   C colors;
@@ -102,9 +135,11 @@ int inputTest(void) {
   M moves;
   char side = White;
   int check = 0;
+  int status = 0;
 
   defaultBoard(curBoard);
   defaultBoard(prevBoard);
+  blankColors(colors);
 
   printf("\nWelcome to my half-baked chess simulator.\nType \"help\" for options!\n");
   printf("\n");
@@ -112,6 +147,8 @@ int inputTest(void) {
 
   while (1) {
     printTurn(side);
+    status = gameStatus(curBoard, side);
+    printf("Game Status: %d\n", status);
     printf(">");
     scanf("%s", c);
     if (strcmp(c, "exit") == 0) {
@@ -154,6 +191,20 @@ int inputTest(void) {
         }
       }
     }
+    else if (strlen(c) == 2) {
+      int x, y;
+      int flag = 0;
+
+      if ((x = charToCoord(c[0])) == -1) flag = 1;
+      if ((y = charToCoord(c[1])) == -1) flag = 1;
+      if (flag) {
+        printf("Error: Move could not be parsed.\n");
+      }
+      else {
+        printColors(colors);
+        check = 0;
+      }
+    }
     else if (strlen(c) == 4) {
       int x, y, xx, yy;
       int flag = 0;
@@ -178,8 +229,8 @@ int inputTest(void) {
     }
 
     if (check) {
+      check = 0;
       if (isPossible(curBoard, prevBoard, side)) {
-        check = 0;
         copyBoard(prevBoard, curBoard);
         switch(side) {
           case White:
@@ -192,6 +243,9 @@ int inputTest(void) {
 
         printf("Move Accepted.\n");
         printBoard(curBoard);
+        if ((status = gameStatus(curBoard, side)) != 0) {
+          break;
+        }
       }
       else {
         printf("Board State Invalid.\n");
@@ -204,5 +258,29 @@ int inputTest(void) {
       printBoard(curBoard);
     }
   }
+
+  switch (status) {
+    case 0:
+      printf("Error: Somehow exited prematurely.\n");
+      break;
+    case 1:
+      printf("Error: Exited when only in check.\n");
+      break;
+    case 2:
+      printf("Game Over: Stalemate.\n");
+      break;
+    case 3:
+      if (side == White) {
+        printf("Game Over: Black Wins!\n");
+      }
+      else {
+        printf("Game Over: White Wins!\n");
+      }
+      break;
+    default:
+      printf("Error: Invalide game state.\n");
+      break;
+  }
+
   return 0;
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "pieces.h"
 #include "chess.h"
+#include "drivers.h"
 
 // Function Definitions
 void defaultBoard(B board) {
@@ -10,8 +11,8 @@ void defaultBoard(B board) {
   initPiece(&board[0][0], Rook, White, 0);
   initPiece(&board[1][0], Knight, White, 0);
   initPiece(&board[2][0], Bishop, White, 0);
-  initPiece(&board[3][0], King, White, 0);
-  initPiece(&board[4][0], Queen, White, 0);
+  initPiece(&board[3][0], Queen, White, 0);
+  initPiece(&board[4][0], King, White, 0);
   initPiece(&board[5][0], Bishop, White, 0);
   initPiece(&board[6][0], Knight, White, 0);
   initPiece(&board[7][0], Rook, White, 0);
@@ -34,8 +35,8 @@ void defaultBoard(B board) {
   initPiece(&board[0][7], Rook, Black, 0);
   initPiece(&board[1][7], Knight, Black, 0);
   initPiece(&board[2][7], Bishop, Black, 0);
-  initPiece(&board[3][7], King, Black, 0);
-  initPiece(&board[4][7], Queen, Black, 0);
+  initPiece(&board[3][7], Queen, Black, 0);
+  initPiece(&board[4][7], King, Black, 0);
   initPiece(&board[5][7], Bishop, Black, 0);
   initPiece(&board[6][7], Knight, Black, 0);
   initPiece(&board[7][7], Rook, Black, 0);
@@ -53,9 +54,7 @@ void blankMoves(M board) {
 void blankBoard(B board) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      board[i][j].type = 0;
-      board[i][j].side = 0;
-      board[i][j].promotion = 0;
+      initPiece(&board[i][j], 0, 0, 0);
     }
   }
 }
@@ -81,6 +80,22 @@ void movePiece(B board, int row1, int col1, int row2, int col2) {
   board[col1][row1].promotion = 0;
   board[col1][row1].unmoved = 0;
 
+  // Castling
+  if (board[col2][row2].type == 'K') {
+    switch (col2-col1) {
+      case 2:
+        movePiece(board, row1, 7, row2, col2-1);
+        break;
+
+      case -2:
+        movePiece(board, row1, 0, row2, col2+1);
+        break;
+
+      default:
+        break;
+    }
+  }
+
   return;
 }
 
@@ -89,6 +104,16 @@ int possibleMoves(B board, M moves, int row, int col) {
   Piece* p;
   int newCol;
   int newRow;
+  int type;
+
+  p = &board[col][row];
+
+  if ((p->type == 'P') && (p->promotion != 0)) {
+    type = p->promotion;
+  }
+  else {
+    type = p->type;
+  }
 
   blankMoves(moves);
 
@@ -100,9 +125,8 @@ int possibleMoves(B board, M moves, int row, int col) {
   }
 
   moves[col][row] = -1;
-  p = &board[col][row];
 
-  switch(p->type) {
+  switch(type) {
     case 'P':
       // TODO: Enpassante
       // Set pawn direction
@@ -117,13 +141,13 @@ int possibleMoves(B board, M moves, int row, int col) {
           if (p->unmoved) {
             if (p->side == White) {
               if (board[col][newRow + 1].side == 0) {
-                moves[col][newRow + 1] = 1;
+                moves[col][newRow + 1] = 3;
                 ret += 1;
               }
             }
             else {
               if (board[col][newRow - 1].side == 0) {
-                moves[col][newRow - 1] = 1;
+                moves[col][newRow - 1] = 3;
                 ret += 1;
               }
             }
@@ -347,16 +371,45 @@ int possibleMoves(B board, M moves, int row, int col) {
       // Middle
       newRow = row;
       if (newRow < 8) {
-        for(int i = -1; i < 2; i++) {
+        for(int i = -2; i <= 2; i++) {
           newCol = col + i;
-          if ((i != 0) && (newCol < 8) && (newCol >= 0)) {
-            if(board[newCol][newRow].side == 0) {
-              moves[newCol][newRow] = 1;
-              ret += 1;
-            }
-            else if(board[newCol][newRow].side != p->side) {
-              moves[newCol][newRow] = 2;
-              ret += 1;
+          if ((newCol < 8) && (newCol >= 0)) {
+            switch (i) {
+              case -1:
+              case 1:
+                if(board[newCol][newRow].side == 0) {
+                  moves[newCol][newRow] = 1;
+                  ret += 1;
+                }
+                else if(board[newCol][newRow].side != p->side) {
+                  moves[newCol][newRow] = 2;
+                  ret += 1;
+                }
+                break;
+              case -2:
+                moves[newCol][newRow] = 3;
+                if ((!p->unmoved) || (board[0][row].type != 'R') || (!board[0][row].unmoved)) {
+                  moves[newCol][newRow] = 0;
+                }
+                for (int j = 1; j < col; j++) {
+                  if (board[j][row].side != 0) {
+                    moves[newCol][newRow] = 0;
+                  }
+                }
+                break;
+              case 2:
+                moves[newCol][newRow] = 3;
+                if ((!p->unmoved) || (board[7][row].type != 'R') || (!board[7][row].unmoved)) {
+                  moves[newCol][newRow] = 0;
+                }
+                for (int j = 6; j > col; j--) {
+                  if (board[j][row].side != 0) {
+                    moves[newCol][newRow] = 0;
+                  }
+                }
+                break;
+              default:
+                break;
             }
           }
         }
@@ -410,8 +463,8 @@ int possibleMoves(B board, M moves, int row, int col) {
       break;
 
     default:
-      blankMoves(moves);
       return 0;
+      break;
   }
 
   return ret;
@@ -474,22 +527,13 @@ int checkStatus(B board, char side){
 }
 
 int gameStatus(B board, char side) {
-  int check = checkStatus(board, side);
   int stale;
+  int check;
 
-  switch(side) {
-    case White:
-      stale = !canMove(board, Black);
-      break;
-    case Black:
-      stale = !canMove(board, White);
-      break;
-    default:
-      stale = 0;
-      break;
-  }
+  check = checkStatus(board, side);
+  stale = !canMove(board, side);
 
-  return check + (stale << 1);
+  return check | (stale << 1);
 }
 
 int canMove(B board, char side) {
@@ -497,7 +541,7 @@ int canMove(B board, char side) {
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((board[i][j].side == side) && (validMoves(board, moves, i, j))) {
+      if ((board[i][j].side == side) && (validMoves(board, moves, j, i))) {
         //TODO: FIX THIS
         printf("ROW: %d | COL: %d\n", j, i);
         return 1;
@@ -526,7 +570,7 @@ int isPossible(B newBoard, B oldBoard, int side) {
   diffCt = diffBoards(newBoard, oldBoard, diff);
 
   if (diffCt == 0) {
-    return 1;
+    return 0;
   }
   else if ((diffCt > 4) || (diffCt < 0)) {
     return 0;
