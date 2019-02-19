@@ -16,8 +16,8 @@ int inputTest(void);
 int main(int argc, char** argv) {
   //testLedDrivers();
   //testChessLibrary();
-  //inputTest();
-  testCastling();
+  //testCastling();
+  inputTest();
 
   return 0;
 }
@@ -26,7 +26,7 @@ int testLedDrivers(void) {
   C colors;
   B curBoard;
   B prevBoard;
-  M moves;
+  //M moves;
 
   int sourceRow;
   int sourceCol;
@@ -191,6 +191,16 @@ int inputTest(void) {
         }
       }
     }
+    else if (strcmp(c, "newgame") == 0) {
+      check = 0;
+      status = 0;
+
+      defaultBoard(curBoard);
+      defaultBoard(prevBoard);
+      blankColors(colors);
+
+      printf("New Game Started.\n");
+    }
     else if (strlen(c) == 2) {
       int x, y;
       int flag = 0;
@@ -201,7 +211,9 @@ int inputTest(void) {
         printf("Error: Move could not be parsed.\n");
       }
       else {
-        printColors(colors);
+        //printColors(colors);
+        validMoves(curBoard, moves, y, x);
+        printMoves(curBoard, moves);
         check = 0;
       }
     }

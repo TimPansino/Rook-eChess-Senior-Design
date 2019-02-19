@@ -96,6 +96,31 @@ void movePiece(B board, int row1, int col1, int row2, int col2) {
     }
   }
 
+  // Remove old ghost
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      if (board[i][j].type == 'G') {
+        board[i][j].type = 0;
+      }
+    }
+  }
+
+  // Add new ghost
+  if ((board[col2][row2].type == 'P') && (board[col2][row2].promotion == 0)) {
+    switch (row2 - row1) {
+      case 2:
+        board[col2][row1+1].type = 'G';
+        break;
+
+      case -2:
+        board[col2][row1-1].type = 'G';
+        break;
+
+      default:
+        break;
+    }
+  }
+
   return;
 }
 
@@ -128,7 +153,6 @@ int possibleMoves(B board, M moves, int row, int col) {
 
   switch(type) {
     case 'P':
-      // TODO: Enpassante
       // Set pawn direction
       if (p->side == White) newRow = row + 1;
       else newRow = row - 1;
@@ -162,6 +186,10 @@ int possibleMoves(B board, M moves, int row, int col) {
             moves[newCol][newRow] = 2;
             ret += 1;
           }
+          else if (board[newCol][newRow].type == 'G') {
+            moves[newCol][newRow] = 3;
+            ret += 1;
+          }
         }
 
         // Right
@@ -169,6 +197,10 @@ int possibleMoves(B board, M moves, int row, int col) {
         if ((newCol < 8) && ((newCol) >= 0)) {
           if ((board[newCol][newRow].side != 0) && (board[newCol][newRow].side != p->side)) {
             moves[newCol][newRow] = 2;
+            ret += 1;
+          }
+          else if (board[newCol][newRow].type == 'G') {
+            moves[newCol][newRow] = 3;
             ret += 1;
           }
         }
@@ -542,8 +574,6 @@ int canMove(B board, char side) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if ((board[i][j].side == side) && (validMoves(board, moves, j, i))) {
-        //TODO: FIX THIS
-        printf("ROW: %d | COL: %d\n", j, i);
         return 1;
       }
     }
