@@ -1,3 +1,5 @@
+#include "drivers.h"
+
 // Function Declarations
 void initPiece(Piece* p, char type, char side, char promotion);
 void blankBoard(B board);
@@ -12,3 +14,5 @@ int diffBoards(B newBoard, B oldBoard, M diff);
 void copyBoard(B newBoard, B oldBoard);
 int canMove(B board, char side);
 int gameStatus(B board, char side);
+void initMove(Move* move);
+int parseState(B newBoard, B oldBoard, int side, C colors, Move* move);

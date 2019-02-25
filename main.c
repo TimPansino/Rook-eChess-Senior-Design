@@ -98,8 +98,11 @@ int testChessLibrary(void) {
 
 int testCastling(void) {
   B curBoard;
+  B prevBoard;
   M moves;
   C colors;
+  Move move;
+  int side = 1;
 
   defaultBoard(curBoard);
   blankColors(colors);
@@ -110,8 +113,14 @@ int testCastling(void) {
   initPiece(&curBoard[5][0], 0, 0, 0);
   initPiece(&curBoard[6][0], 0, 0, 0);
 
+  copyBoard(prevBoard, curBoard);
+
   printBoard(curBoard);
+
+  curBoard[4][0].side = 0;
+  parseState(prevBoard, curBoard, side, colors, &move);
   printColors(colors);
+  curBoard[4][0].side = 1;
 
   validMoves(curBoard, moves, 0, 4);
   printMoves(curBoard, moves);
@@ -119,6 +128,8 @@ int testCastling(void) {
   if (moves[5][0] != 0) {
     movePiece(curBoard, 0, 4, 0, 6);
     printBoard(curBoard);
+    parseState(curBoard, prevBoard, side, colors, &move);
+    printColors(colors);
   }
   else {
     printf("Castling failed.\n");
@@ -133,6 +144,8 @@ int inputTest(void) {
   B curBoard;
   B prevBoard;
   M moves;
+  Piece tempPiece;
+  Move curMove;
   char side = White;
   int check = 0;
   int status = 0;
@@ -202,6 +215,7 @@ int inputTest(void) {
       printf("New Game Started.\n");
     }
     else if (strlen(c) == 2) {
+      // Lift a piece to view colors
       int x, y;
       int flag = 0;
 
@@ -211,13 +225,28 @@ int inputTest(void) {
         printf("Error: Move could not be parsed.\n");
       }
       else {
-        //printColors(colors);
+        // Lift Piece
+        tempPiece.type = curBoard[x][y].type;
+        tempPiece.side = curBoard[x][y].side;
+        curBoard[x][y].type = 0;
+        curBoard[x][y].side = 0;
+
+        // Display Status
+        parseState(curBoard, prevBoard, side, colors, &curMove);
+        printColors(colors);
+
+        // Replace Piece
+        curBoard[x][y].type = tempPiece.type;
+        curBoard[x][y].side = tempPiece.side;
+
+        // Display Moves
         validMoves(curBoard, moves, y, x);
         printMoves(curBoard, moves);
         check = 0;
       }
     }
     else if (strlen(c) == 4) {
+      // Move a piece
       int x, y, xx, yy;
       int flag = 0;
       if ((x = charToCoord(c[0])) == -1) flag = 1;
@@ -232,9 +261,6 @@ int inputTest(void) {
         movePiece(curBoard, y, x, yy, xx);
         check = 1;
       }
-    }
-    else if (strlen(c) == 9) {
-      printf("Unhandled delete.\n");
     }
     else {
       printf("Error: Could not parse command.\n");

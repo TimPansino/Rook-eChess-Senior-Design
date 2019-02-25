@@ -1,8 +1,8 @@
 // Includes
 #include <stdio.h>
 #include "pieces.h"
-#include "chess.h"
 #include "drivers.h"
+#include "chess.h"
 
 // Function Definitions
 void defaultBoard(B board) {
@@ -652,6 +652,177 @@ int isPossible(B newBoard, B oldBoard, int side) {
 
 
   return 0;
+}
+
+int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
+    M diff;
+    M moves;
+    int diffCt;
+    int state = 0;
+    int temp;
+
+    int destRow1 = -1;
+    int destCol1 = -1;
+    int destRow2 = -1;
+    int destCol2 = -1;
+
+    int sourceRow1 = -1;
+    int sourceCol1 = -1;
+    int sourceRow2 = -1;
+    int sourceCol2 = -1;
+
+    diffCt = diffBoards(newBoard, oldBoard, diff);
+    initMove(move);
+    blankColors(colors);
+
+    if (diffCt == 0) {
+      return state;
+    }
+    else if ((diffCt > 4) || (diffCt < 0)) {
+      state = -1;
+    }
+    else {
+      for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+          if (diff[i][j] == 1) {
+            if (newBoard[i][j].side == side) {
+              if (destCol1 == -1) {
+                  destRow1 = j;
+                  destCol1 = i;
+              }
+              else if (destCol2 == -1){
+                destRow2 = j;
+                destCol2 = i;
+              }
+              else {
+                state = -1;
+              }
+            }
+            else if (newBoard[i][j].side == 0) {
+              if (sourceCol1 == -1) {
+                  sourceRow1 = j;
+                  sourceCol1 = i;
+              }
+              else if (sourceCol2 == -1) {
+                sourceRow2 = j;
+                sourceCol2 = i;
+              }
+              else {
+                state = -1;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Catch errors
+    if (state == -1) {
+      for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+          if (diff[i][j]) {
+            colors[i][j] = COLOR_ERROR;
+          }
+        }
+      }
+      return state;
+    }
+
+
+    // Set Colors
+    if ((destRow1 == -1) && (sourceRow2 == -1) && (destRow2 == -1)) {
+      validMoves(oldBoard, moves, sourceRow1, sourceCol1);
+      for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+          switch (moves[i][j]) {
+            case -1:
+              colors[i][j] = COLOR_ORIGIN;
+              break;
+
+            case 1:
+              colors[i][j] = COLOR_POSSIBLE;
+              break;
+
+            case 2:
+              colors[i][j] = COLOR_CAPTURE;
+              break;
+
+            case 3:
+              colors[i][j] = COLOR_SPECIAL;
+              break;
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+    else if ((sourceRow2 == -1) && (destRow2 == -1)) {
+      if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
+        switch (moves[destCol1][destRow1]) {
+          case -1:
+            colors[destCol1][destRow1] = COLOR_ORIGIN;
+            break;
+
+          case 1:
+            colors[destCol1][destRow1] = COLOR_POSSIBLE;
+            break;
+
+          case 2:
+            colors[destCol1][destRow1] = COLOR_CAPTURE;
+            break;
+
+          case 3:
+            colors[destCol1][destRow1] = COLOR_SPECIAL;
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+    else if (sourceRow2 != -1) {
+      //TODO: Enpassante
+      printf("Enpassante detected.\n");
+      if (newBoard[destCol1][destRow1].type == 'P') {
+        return 1;
+      }
+      else if (newBoard[destCol2][destRow2].type == 'P') {
+        return 1;
+      }
+      else {
+        state = -1;
+      }
+    }
+    else if ((sourceRow2 != -1) && (destRow2 != -1)) {
+      //TODO: Castling
+      printf("Castling detected.\n");
+      state -1;
+    }
+    else {
+      state -1;
+    }
+
+    // Catch errors
+    if (state == -1) {
+      for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+          if (diff[i][j]) {
+            colors[i][j] = COLOR_ERROR;
+          }
+        }
+      }
+      return state;
+    }
+
+    return state;
+}
+
+void initMove(Move* move) {
+  move->newRow = -1;
+  move->newCol = -1;
+  move->oldRow = -1;
+  move->oldCol = -1;
 }
 
 int diffBoards(B newBoard, B oldBoard, M diff) {

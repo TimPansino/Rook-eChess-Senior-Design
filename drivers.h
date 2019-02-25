@@ -20,11 +20,12 @@
 #define B_SHIFT BLUE/2
 
 // Color Choices
-#define C_ERROR     RED
-#define C_POSSIBLE  BLUE
-#define C_CAPTURE   GREEN
-#define C_CHECK     YELLOW
-#define C_SPECIAL   PURPLE
+#define COLOR_ERROR     RED
+#define COLOR_POSSIBLE  BLUE
+#define COLOR_CAPTURE   GREEN
+#define COLOR_SPECIAL   PURPLE
+#define COLOR_ORIGIN    WHITE
+#define COLOR_CHECK     YELLOW
 
 // Type Definitions
 typedef char Color;

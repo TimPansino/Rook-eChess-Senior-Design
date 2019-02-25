@@ -17,3 +17,9 @@ typedef struct Piece_S {
 } Piece;
 typedef Piece B[8][8];
 typedef char M[8][8];
+typedef struct Move_S {
+  int newRow;
+  int newCol;
+  int oldRow;
+  int oldCol;
+} Move;
