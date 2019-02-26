@@ -70,6 +70,13 @@ void movePiece(B board, int row1, int col1, int row2, int col2) {
   if ((row1 == row2) && (col1 == col2)) {
     return;
   }
+
+  // Enpassante
+  if ((board[col2][row2].type == 'G') && (board[col1][row1].type == 'P')) {
+    board[col2][row1].side = 0;
+  }
+
+  // Move Piece
   board[col2][row2].type = board[col1][row1].type;
   board[col2][row2].side = board[col1][row1].side;
   board[col2][row2].promotion = board[col1][row1].promotion;
@@ -505,6 +512,7 @@ int possibleMoves(B board, M moves, int row, int col) {
 int validMoves(B board, M moves, int row, int col) {
   char side = board[col][row].side;
   int ret = 0;
+  B newBoard;
 
   // Retrieve possible moves
   possibleMoves(board, moves, row, col);
@@ -513,15 +521,13 @@ int validMoves(B board, M moves, int row, int col) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if (moves[j][i] != 0) {
-        ret += 1;
-        switch(checkStatus(board, side)) {
-          case 1: // Check
-          case 3: // Checkmate
-            moves[j][i] = 0;
-            ret -= 1;
-            break;
-
-          default: break;
+        copyBoard(newBoard, board);
+        movePiece(newBoard, row, col, i, j);
+        if (checkStatus(newBoard, side)) {
+          moves[j][i] = 0;
+        }
+        else {
+          ret += 1;
         }
       }
     }
@@ -532,7 +538,6 @@ int validMoves(B board, M moves, int row, int col) {
 int checkStatus(B board, char side){
   M moves;
   Piece* p;
-  int check = 0;
 
   // Scan board
   for (int j = 0; j < 8; j++) {
@@ -542,11 +547,9 @@ int checkStatus(B board, char side){
         possibleMoves(board, moves, i, j);
         if (p->side != side) {
           for (int jj = 0; jj < 8; jj++) {
-            if (check) break;
             for (int ii = 0; ii < 8; ii++) {
               if ((moves[jj][ii] == 2) && (board[jj][ii].type == 'K')){
-                check = 1;
-                break;
+                return 1;
               }
             }
           }
@@ -555,7 +558,7 @@ int checkStatus(B board, char side){
     }
   }
 
-  return check;
+  return 0;
 }
 
 int gameStatus(B board, char side) {
@@ -565,6 +568,9 @@ int gameStatus(B board, char side) {
   check = checkStatus(board, side);
   stale = !canMove(board, side);
 
+  printf("Check: %d\n", check);
+  printf("Stale: %d\n", stale);
+
   return check | (stale << 1);
 }
 
@@ -573,83 +579,14 @@ int canMove(B board, char side) {
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((board[i][j].side == side) && (validMoves(board, moves, j, i))) {
-        return 1;
-      }
-    }
-  }
-
-  return 0;
-}
-
-int isPossible(B newBoard, B oldBoard, int side) {
-  M diff;
-  M moves;
-  int diffCt;
-
-  int destRow1 = -1;
-  int destCol1 = -1;
-  int destRow2 = -1;
-  int destCol2 = -1;
-
-  int sourceRow1 = -1;
-  int sourceCol1 = -1;
-  int sourceRow2 = -1;
-  int sourceCol2 = -1;
-
-  diffCt = diffBoards(newBoard, oldBoard, diff);
-
-  if (diffCt == 0) {
-    return 0;
-  }
-  else if ((diffCt > 4) || (diffCt < 0)) {
-    return 0;
-  }
-  else {
-    for (int j = 0; j < 8; j++) {
-      for (int i = 0; i < 8; i++) {
-        if (diff[i][j] == 1) {
-          if (newBoard[i][j].side == side) {
-            if (destCol1 == -1) {
-                destRow1 = j;
-                destCol1 = i;
-            }
-            else {
-              destRow2 = j;
-              destCol2 = i;
-            }
-          }
-          else if (newBoard[i][j].side == 0) {
-            if (sourceCol1 == -1) {
-                sourceRow1 = j;
-                sourceCol1 = i;
-            }
-            else {
-              sourceRow2 = j;
-              sourceCol2 = i;
-            }
-          }
+      if (board[i][j].side == side) {
+        printf("Checking Piece (%d, %d)\n", j, i);
+        if (validMoves(board, moves, j, i)) {
+          return 1;
         }
       }
     }
   }
-
-  if ((sourceRow2 == -1) && (destRow2 == -1)) {
-    if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
-      if (moves[destCol1][destRow1]) {
-        return 1;
-      }
-    }
-  }
-  else if ((sourceRow2 != -1) && (destRow2 != -1)){
-    //TODO: Castling
-    return 1;
-  }
-  else {
-    //TODO: Enpassante
-    return 0;
-  }
-
 
   return 0;
 }
@@ -659,24 +596,24 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     M moves;
     int diffCt;
     int state = 0;
-    int temp;
 
     int destRow1 = -1;
     int destCol1 = -1;
     int destRow2 = -1;
     int destCol2 = -1;
-
     int sourceRow1 = -1;
     int sourceCol1 = -1;
     int sourceRow2 = -1;
     int sourceCol2 = -1;
+    int missingRow = -1;
+    int missingCol = -1;
 
     diffCt = diffBoards(newBoard, oldBoard, diff);
     initMove(move);
     blankColors(colors);
 
     if (diffCt == 0) {
-      return state;
+      return 0;
     }
     else if ((diffCt > 4) || (diffCt < 0)) {
       state = -1;
@@ -698,7 +635,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
                 state = -1;
               }
             }
-            else if (newBoard[i][j].side == 0) {
+            else if ((newBoard[i][j].side == 0) && (oldBoard[i][j].side == side)) {
               if (sourceCol1 == -1) {
                   sourceRow1 = j;
                   sourceCol1 = i;
@@ -710,6 +647,10 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
               else {
                 state = -1;
               }
+            }
+            else if (newBoard[i][j].side == 0) {
+              missingRow = j;
+              missingCol = i;
             }
           }
         }
@@ -725,12 +666,14 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
           }
         }
       }
-      return state;
+      return -1;
     }
 
+    // Debug
+    printf("Ct: %d\nS: %d | %d\nD: %d | %d\nM: %d\n", diffCt, sourceRow1, sourceRow2, destRow1, destRow2, missingRow);
 
     // Set Colors
-    if ((destRow1 == -1) && (sourceRow2 == -1) && (destRow2 == -1)) {
+    if ((diffCt == 1) && (sourceRow1 != -1)) {
       validMoves(oldBoard, moves, sourceRow1, sourceCol1);
       for (int j = 0; j < 8; j++) {
         for (int i = 0; i < 8; i++) {
@@ -756,6 +699,9 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
           }
         }
       }
+    }
+    else if ((diffCt == 2) && (destRow1 == -1) && (missingRow != -1)) {
+      // Indicate
     }
     else if ((sourceRow2 == -1) && (destRow2 == -1)) {
       if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
@@ -797,10 +743,10 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     else if ((sourceRow2 != -1) && (destRow2 != -1)) {
       //TODO: Castling
       printf("Castling detected.\n");
-      state -1;
+      state = -1;
     }
     else {
-      state -1;
+      state = -1;
     }
 
     // Catch errors
@@ -812,10 +758,10 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
           }
         }
       }
-      return state;
+      return -1;
     }
 
-    return state;
+    return 1;
 }
 
 void initMove(Move* move) {

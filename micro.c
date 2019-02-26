@@ -7,6 +7,8 @@ void validMovesTest(void) {
   B curBoard;
   B prevBoard;
   M moves;
+  Move move;
+  C colors;
   int testRow;
   int testCol;
   int sourceRow;
@@ -42,7 +44,7 @@ void validMovesTest(void) {
   //printf("White Check Status: %d\n", checkStatus(curBoard, White));
   //printf("Black Check Status: %d\n\n", checkStatus(curBoard, Black));
 
-  isPossible(curBoard, prevBoard, 1);
+  parseState(curBoard, prevBoard, White, colors, &move);
   checkStatus(curBoard, White);
   checkStatus(curBoard, Black);
 

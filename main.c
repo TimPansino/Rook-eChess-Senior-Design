@@ -54,6 +54,8 @@ int testChessLibrary(void) {
   B curBoard;
   B prevBoard;
   M moves;
+  Move move;
+  C colors;
   int testRow;
   int testCol;
   int sourceRow;
@@ -87,7 +89,7 @@ int testChessLibrary(void) {
 
   movePiece(curBoard, sourceRow, sourceCol, testRow, testCol);
   printBoard(curBoard);
-  printf("Valid Move: %d\n\n", isPossible(curBoard, prevBoard, White));
+  printf("Valid Move: %d\n\n", parseState(curBoard, prevBoard, White, colors, &move));
 
 
   //printf("White Check Status: %d\n", gameStatus(curBoard, White));
@@ -149,6 +151,7 @@ int inputTest(void) {
   char side = White;
   int check = 0;
   int status = 0;
+  int parse = 0;
 
   defaultBoard(curBoard);
   defaultBoard(prevBoard);
@@ -170,8 +173,14 @@ int inputTest(void) {
     }
     else if (strcmp(c, "help") == 0) {
       printf("help: This menu.\n");
+      printf("b2c2: Movement example. \n");
+      printf("d4: Lift piece example. \n");
+      printf("skip: Ends current turn.\n");
+      printf("force: Ends current turn and accepts board state.\n");
+      printf("reset: Put the board back to the last accepted state.\n");
+      printf("newgame: Start a new game.\n");
       printf("exit: Leave the simulator.\n");
-      printf("b2c2: Example move. \n");
+
     }
     else if (strcmp(c, "reset") == 0) {
       printf("Reset board to last state.\n");
@@ -207,6 +216,7 @@ int inputTest(void) {
     else if (strcmp(c, "newgame") == 0) {
       check = 0;
       status = 0;
+      side = White;
 
       defaultBoard(curBoard);
       defaultBoard(prevBoard);
@@ -240,8 +250,10 @@ int inputTest(void) {
         curBoard[x][y].side = tempPiece.side;
 
         // Display Moves
-        validMoves(curBoard, moves, y, x);
-        printMoves(curBoard, moves);
+        if (side == curBoard[x][y].side) {
+          validMoves(curBoard, moves, y, x);
+          printMoves(curBoard, moves);
+        }
         check = 0;
       }
     }
@@ -268,7 +280,7 @@ int inputTest(void) {
 
     if (check) {
       check = 0;
-      if (isPossible(curBoard, prevBoard, side)) {
+      if (parseState(curBoard, prevBoard, side, colors, &curMove) == 1) {
         copyBoard(prevBoard, curBoard);
         switch(side) {
           case White:
