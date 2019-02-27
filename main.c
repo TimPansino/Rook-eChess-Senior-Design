@@ -224,6 +224,33 @@ int inputTest(void) {
 
       printf("New Game Started.\n");
     }
+    else if ((strlen(c) == 6) && (c[0] == 'd') && (c[1] == 'e') && (c[2] == 'l') && (c[3] == ' ')) {
+      // Delete a piece
+      int x, y;
+      int flag = 0;
+
+      if ((x = charToCoord(c[0])) == -1) flag = 1;
+      if ((y = charToCoord(c[1])) == -1) flag = 1;
+      if (flag) {
+        printf("Error: Move could not be parsed.\n");
+      }
+      else {
+        curBoard[x][y].type = 0;
+        curBoard[x][y].side = 0;
+
+        // Display Status
+        check = parseState(curBoard, prevBoard, side, colors, &curMove);
+        printf("Parse Ret: %d\n", check);
+        printColors(colors);
+
+        // Display Moves
+        if (side == curBoard[x][y].side) {
+          validMoves(curBoard, moves, y, x);
+          printMoves(curBoard, moves);
+        }
+        check = 0;
+      }
+    }
     else if (strlen(c) == 2) {
       // Lift a piece to view colors
       int x, y;
@@ -242,7 +269,8 @@ int inputTest(void) {
         curBoard[x][y].side = 0;
 
         // Display Status
-        parseState(curBoard, prevBoard, side, colors, &curMove);
+        check = parseState(curBoard, prevBoard, side, colors, &curMove);
+        printf("Parse Ret: %d\n", check);
         printColors(colors);
 
         // Replace Piece
@@ -279,8 +307,9 @@ int inputTest(void) {
     }
 
     if (check) {
-      check = 0;
-      if (parseState(curBoard, prevBoard, side, colors, &curMove) == 1) {
+      check = parseState(curBoard, prevBoard, side, colors, &curMove);
+      printf("Parse Ret: %d\n", check);
+      if (check == 1) {
         copyBoard(prevBoard, curBoard);
         switch(side) {
           case White:
@@ -293,7 +322,7 @@ int inputTest(void) {
 
         printf("Move Accepted.\n");
         printBoard(curBoard);
-        if ((status = gameStatus(curBoard, side)) != 0) {
+        if ((status = gameStatus(curBoard, side)) > 1) {
           break;
         }
       }
@@ -302,6 +331,7 @@ int inputTest(void) {
         printBoard(curBoard);
         printf("Use \"reset\" to go back.\n");
       }
+      check = 0;
     }
     else {
       printf("\n");

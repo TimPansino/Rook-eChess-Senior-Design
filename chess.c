@@ -595,7 +595,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     M diff;
     M moves;
     int diffCt;
-    int state = 0;
+    int state = 1;
 
     int destRow1 = -1;
     int destCol1 = -1;
@@ -701,7 +701,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       }
     }
     else if ((diffCt == 2) && (destRow1 == -1) && (missingRow != -1)) {
-      // Indicate
+      // Indicate Possible Capture
     }
     else if ((sourceRow2 == -1) && (destRow2 == -1)) {
       if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
@@ -761,7 +761,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       return -1;
     }
 
-    return 1;
+    return state;
 }
 
 void initMove(Move* move) {
