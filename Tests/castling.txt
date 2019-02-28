@@ -1,0 +1,12 @@
+d2d4
+e7e5
+d1d3
+g8f6
+c1e3
+f8d6
+b1c3
+e8
+e8g8
+e1
+e1c1
+exit
