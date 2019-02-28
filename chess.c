@@ -608,11 +608,6 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     int missingRow = -1;
     int missingCol = -1;
 
-    move.destRow = -1;
-    move.destCol = -1;
-    move.sourceRow = -1;
-    move.sourceCol = -1;
-
     diffCt = diffBoards(newBoard, oldBoard, diff);
     initMove(move);
     blankColors(colors);
@@ -628,26 +623,26 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
         for (int i = 0; i < 8; i++) {
           if (diff[i][j] == 1) {
             if (newBoard[i][j].side == side) {
-              if (move.destCol == -1) {
-                  move.destRow = j;
-                  move.destCol = i;
+              if (move->destCol == -1) {
+                  move->destRow = j;
+                  move->destCol = i;
               }
               else {
                 if (newBoard[i][j].type == 'K') {
-                  move.destRow = j;
-                  move.destCol = i;
+                  move->destRow = j;
+                  move->destCol = i;
                 }
               }
             }
             else if ((newBoard[i][j].side == 0) && (oldBoard[i][j].side == side)) {
-              if (move.sourceCol == -1) {
-                  move.sourceRow = j;
-                  move.sourceCol = i;
+              if (move->sourceCol == -1) {
+                  move->sourceRow = j;
+                  move->sourceCol = i;
               }
-              else if (sourceCol2 == -1) {
+              else {
                 if (oldBoard[i][j].type == 'K') {
-                  move.sourceRow = j;
-                  move.sourceCol = i;
+                  move->sourceRow = j;
+                  move->sourceCol = i;
                 }
               }
             }
@@ -673,9 +668,9 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     }
 
     // Set Colors
-    if ((diffCt == 1) && (move.sourceRow != -1)) {
+    if ((diffCt == 1) && (move->sourceRow != -1)) {
       // Indicate Possible Moves
-      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
+      validMoves(oldBoard, moves, move->sourceRow, move->sourceCol);
       for (int j = 0; j < 8; j++) {
         for (int i = 0; i < 8; i++) {
           switch (moves[i][j]) {
@@ -701,19 +696,19 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
         }
       }
     }
-    else if ((diffCt == 2) && (move.sourceRow != -1) && (missingRow != -1)) {
+    else if ((diffCt == 2) && (move->sourceRow != -1) && (missingRow != -1)) {
       // Indicate Possible Capture
-      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
+      validMoves(oldBoard, moves, move->sourceRow, move->sourceCol);
       // TODO
     }
-    else if ((move.sourceRow != -1) && (move.destRow != -1)) {
+    else if ((move->sourceRow != -1) && (move->destRow != -1)) {
       copyBoard(tempBoard, oldBoard);
-      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
-      if (moves[move.destCol][move.destRow] == 0) {
+      validMoves(oldBoard, moves, move->sourceRow, move->sourceCol);
+      if (moves[move->destCol][move->destRow] == 0) {
         state = -1;
       }
       else {
-        movePiece(tempBoard, move.sourceRow, move.sourceCol, move.destRow, move.destCol, 1);
+        movePiece(tempBoard, move->sourceRow, move->sourceCol, move->destRow, move->destCol, 1);
 
         printf("\n\n\n");
         printf("Temp Board\n");
@@ -761,10 +756,10 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
 }
 
 void initMove(Move* move) {
-  move->newRow = -1;
-  move->newCol = -1;
-  move->oldRow = -1;
-  move->oldCol = -1;
+  move->sourceRow = -1;
+  move->sourceCol = -1;
+  move->destRow = -1;
+  move->destCol = -1;
 }
 
 int diffBoards(B newBoard, B oldBoard, M diff) {
