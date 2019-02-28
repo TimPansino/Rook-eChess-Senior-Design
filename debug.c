@@ -244,9 +244,21 @@ char pawnPromote(void) {
         return c;
         break;
 
-      default: 
+      default:
         c = 0;
         break;
+    }
+  }
+}
+
+void updateLeds(C curBoard, C prevBoard) {
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      if (curBoard[i][j] != prevBoard[i][j]) {
+        printColor(curBoard, j, i);
+        prevBoard[i][j] = curBoard[i][j];
+        // Update LED with driver
+      }
     }
   }
 }
