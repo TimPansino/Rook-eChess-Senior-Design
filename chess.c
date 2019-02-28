@@ -710,16 +710,6 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       else {
         movePiece(tempBoard, move->sourceRow, move->sourceCol, move->destRow, move->destCol, 1);
 
-        printf("\n\n\n");
-        printf("Temp Board\n");
-        printBoard(tempBoard);
-        printf("Old Board\n");
-        printBoard(oldBoard);
-        printf("New Board\n");
-        printBoard(newBoard);
-        printf("\n\n\n");
-        
-
         if (diffBoards(tempBoard, newBoard, dummyDiff) != 0) {
           state = -1;
         }

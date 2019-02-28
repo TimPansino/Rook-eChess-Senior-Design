@@ -5,7 +5,7 @@
 #include "drivers.h"
 #include "chess.h"
 #include "debug.h"
-//#include "micro.h"
+#include "micro.h"
 
 int testChessLibrary(void);
 int testLedDrivers(void);
@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
   //testLedDrivers();
   //testChessLibrary();
   //testCastling();
+  //ledTest();
   inputTest();
 
   return 0;

@@ -3,50 +3,32 @@
 #include "chess.h"
 #include "micro.h"
 
-void validMovesTest(void) {
+void ledTest(void) {
   B curBoard;
   B prevBoard;
   M moves;
   Move move;
   C colors;
-  int testRow;
-  int testCol;
-  int sourceRow;
-  int sourceCol;
-  int originRow;
-  int originCol;
+  int state;
+  int check;
 
-  blankBoard(curBoard);
-  //printBoard(curBoard);
+  // Default Setup
+  defaultBoard(prevBoard);
 
-  defaultBoard(curBoard);
-  //copyBoard(prevBoard, curBoard);
-  //printBoard(curBoard);
+  // Delete Pawn
+  prevBoard[3][1].side = 0;
+  prevBoard[3][1].type = 0;
+  copyBoard(curBoard, prevBoard);
 
-  originRow = 0;
-  originCol = 4;
-  sourceRow = 3;
-  sourceCol = 4;
-  testRow = 6;
-  testCol = 1;
+  // Move Queen Out
+  movePiece(curBoard, 0, 3, 3, 3, 1);
 
-  movePiece(curBoard, originRow, originCol, sourceRow, sourceCol);
-  copyBoard(prevBoard, curBoard);
-  //printBoard(prevBoard);
+  // Test Board State
+  state = parseState(curBoard, prevBoard, White, colors, &move);
+  check = checkStatus(curBoard, Black);
 
-  validMoves(prevBoard, moves, sourceRow, sourceCol);
-  //printMoves(prevBoard, moves);
-
-  movePiece(curBoard, sourceRow, sourceCol, testRow, testCol);
-  //printBoard(curBoard);
-  //printf("Valid Move: %d\n\n", isPossible(curBoard, prevBoard, 1));
-
-  //printf("White Check Status: %d\n", checkStatus(curBoard, White));
-  //printf("Black Check Status: %d\n\n", checkStatus(curBoard, Black));
-
-  parseState(curBoard, prevBoard, White, colors, &move);
-  checkStatus(curBoard, White);
-  checkStatus(curBoard, Black);
+  //printf("State: %d\n", state);
+  //printf("Check: %d\n", check);
 
   return;
 }

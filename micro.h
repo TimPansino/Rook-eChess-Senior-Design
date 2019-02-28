@@ -1,1 +1,1 @@
-void validMovesTest(void);
+void ledTest(void);
