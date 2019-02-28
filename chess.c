@@ -377,8 +377,7 @@ int possibleMoves(B board, M moves, int row, int col) {
       break;
 
     case 'K':
-    // TODO: Add castling.
-      // Down
+      // Up
       newRow = row + 1;
       if (newRow < 8) {
         for(int i = -1; i < 2; i++) {
@@ -398,7 +397,7 @@ int possibleMoves(B board, M moves, int row, int col) {
 
       // Up
       newRow = row - 1;
-      if (newRow >= 8) {
+      if (newRow >= 0) {
         for(int i = -1; i < 2; i++) {
           newCol = col + i;
           if ((newCol < 8) && (newCol >= 0)) {
@@ -433,9 +432,12 @@ int possibleMoves(B board, M moves, int row, int col) {
                 }
                 break;
               case -2:
-                moves[newCol][newRow] = 3;
                 if ((!p->unmoved) || (board[0][row].type != 'R') || (!board[0][row].unmoved)) {
                   moves[newCol][newRow] = 0;
+                }
+                else {
+                  moves[newCol][newRow] = 3;
+                  ret += 1;
                 }
                 for (int j = 1; j < col; j++) {
                   if (board[j][row].side != 0) {
@@ -444,9 +446,12 @@ int possibleMoves(B board, M moves, int row, int col) {
                 }
                 break;
               case 2:
-                moves[newCol][newRow] = 3;
                 if ((!p->unmoved) || (board[7][row].type != 'R') || (!board[7][row].unmoved)) {
                   moves[newCol][newRow] = 0;
+                }
+                else {
+                  moves[newCol][newRow] = 3;
+                  ret += 1;
                 }
                 for (int j = 6; j > col; j--) {
                   if (board[j][row].side != 0) {
@@ -527,7 +532,7 @@ int validMoves(B board, M moves, int row, int col) {
   // Determine if move is illegal based on check
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if (moves[j][i] != 0) {
+      if (moves[j][i] > 0) {
         copyBoard(newBoard, board);
         movePiece(newBoard, row, col, i, j, 1);
         if (checkStatus(newBoard, side)) {
@@ -584,7 +589,7 @@ int canMove(B board, char side) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if (board[i][j].side == side) {
-        if (validMoves(board, moves, j, i)) {
+        if (validMoves(board, moves, j, i) > 0)  {
           return 1;
         }
       }
@@ -755,7 +760,7 @@ int diffBoards(B newBoard, B oldBoard, M diff) {
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((newBoard[i][j].type != oldBoard[i][j].type) && (newBoard[i][j].side != oldBoard[i][j].side)) {
+      if ((newBoard[i][j].type != oldBoard[i][j].type) || (newBoard[i][j].side != oldBoard[i][j].side)) {
         diff[i][j] = 1;
         ret += 1;
       }

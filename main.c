@@ -10,6 +10,7 @@
 int testChessLibrary(void);
 int testLedDrivers(void);
 int testCastling(void);
+int testCheck(void);
 int inputTest(void);
 
 // Functions
@@ -18,6 +19,7 @@ int main(int argc, char** argv) {
   //testChessLibrary();
   //testCastling();
   //ledTest();
+  //testCheck();
   inputTest();
 
   return 0;
@@ -139,6 +141,28 @@ int testCastling(void) {
   }
 
   return 0;
+}
+
+int testCheck(void) {
+  B curBoard;
+  B prevBoard;
+  M moves;
+  C colors;
+  Move move;
+  int side = White;
+
+  defaultBoard(prevBoard);
+  prevBoard[3][6].side = 0;
+  prevBoard[4][6].side = 0;
+  movePiece(prevBoard, 0, 3, 2, 4, 1);
+  copyBoard(curBoard, prevBoard);
+  printBoard(curBoard);
+  side = Black;
+
+  possibleMoves(curBoard, moves, 7, 4);
+  printMoves(curBoard, moves);
+  validMoves(curBoard, moves, 7, 4);
+  printMoves(curBoard, moves);
 }
 
 int inputTest(void) {
@@ -348,6 +372,7 @@ int inputTest(void) {
         }
 
         printf("Move Accepted.\n");
+        printf("Move: %c%c-%c%c\n", move.sourceCol+'A', move.sourceRow+'1', move.destCol+'A', move.destRow+'1');
         printColors(colors);
         printBoard(curBoard);
         if ((status = gameStatus(curBoard, side)) > 1) {
