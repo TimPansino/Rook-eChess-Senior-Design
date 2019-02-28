@@ -147,8 +147,8 @@ int inputTest(void) {
   B curBoard;
   B prevBoard;
   M moves;
+  Move move;
   Piece tempPiece;
-  Move curMove;
   char side = White;
   int check = 0;
   int status = 0;
@@ -173,15 +173,15 @@ int inputTest(void) {
     }
     else if (strcmp(c, "help") == 0) {
       printf("help: This menu.\n");
-      printf("b2c2: Movement example. \n");
-      printf("d4: Lift piece example (replaces in same spot afterwards). \n");
-      printf("dela1: Delete piece example. \n");
+      printf("b2c2: Movement example.\n");
+      printf("d4: Lift piece example (replaces in same spot afterwards).\n");
+      printf("dela1: Delete piece example.\n");
+      printf("pute5: Replace last deleted piece example.\n");
       printf("skip: Ends current turn.\n");
       printf("force: Ends current turn and accepts board state.\n");
       printf("reset: Put the board back to the last accepted state.\n");
       printf("newgame: Start a new game.\n");
       printf("exit: Leave the simulator.\n");
-
     }
     else if (strcmp(c, "reset") == 0) {
       printf("Reset board to last state.\n");
@@ -246,21 +246,38 @@ int inputTest(void) {
         printf("Error: Move could not be parsed.\n");
       }
       else {
+        tempPiece.type = curBoard[x][y].type;
+        tempPiece.side = curBoard[x][y].side;
+        tempPiece.promotion = curBoard[x][y].promotion;
+        tempPiece.unmoved = 0;
+        
         curBoard[x][y].type = 0;
         curBoard[x][y].side = 0;
-
-        // Display Status
-        check = parseState(curBoard, prevBoard, side, colors, &curMove);
-        printf("Parse Ret: %d\n", check);
-        printColors(colors);
-
-        // Display Moves
-        if (side == curBoard[x][y].side) {
-          validMoves(curBoard, moves, y, x);
-          printMoves(curBoard, moves);
-        }
+        check = 1;
       }
-      check = 1;
+    }
+    else if ((strlen(c) == 5) && (c[0] == 'p') && (c[1] == 'u') && (c[2] == 't')) {
+      // Delete a piece
+      int x, y;
+      int flag = 0;
+
+      if ((x = charToCoord(c[3])) == -1) flag = 1;
+      if ((y = charToCoord(c[4])) == -1) flag = 1;
+      if (flag) {
+        printf("Error: Move could not be parsed.\n");
+      }
+      else if (tempPiece.side == 0) {
+        printf("Error: No piece to replace.\n");
+      }
+      else {
+        curBoard[x][y].type = tempPiece.type;
+        curBoard[x][y].side = tempPiece.side;
+        curBoard[x][y].promotion = tempPiece.promotion;
+        curBoard[x][y].unmoved = 0;
+        tempPiece.side = 0;
+
+        check = 1;
+      }
     }
     else if (strlen(c) == 2) {
       // Lift a piece to view colors
@@ -280,7 +297,7 @@ int inputTest(void) {
         curBoard[x][y].side = 0;
 
         // Display Status
-        check = parseState(curBoard, prevBoard, side, colors, &curMove);
+        check = parseState(curBoard, prevBoard, side, colors, &move);
         printf("Parse Ret: %d\n", check);
         printColors(colors);
 
@@ -318,7 +335,7 @@ int inputTest(void) {
     }
 
     if (check) {
-      check = parseState(curBoard, prevBoard, side, colors, &curMove);
+      check = parseState(curBoard, prevBoard, side, colors, &move);
       if (check == 1) {
         copyBoard(prevBoard, curBoard);
         switch(side) {
@@ -331,6 +348,7 @@ int inputTest(void) {
         }
 
         printf("Move Accepted.\n");
+        printColors(colors);
         printBoard(curBoard);
         if ((status = gameStatus(curBoard, side)) > 1) {
           break;
@@ -338,6 +356,7 @@ int inputTest(void) {
       }
       else {
         printf("Board State Invalid.\n");
+        printColors(colors);
         printBoard(curBoard);
         printf("Use \"reset\" to go back.\n");
       }

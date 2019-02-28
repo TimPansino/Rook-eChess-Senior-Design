@@ -600,7 +600,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     M dummyDiff;
     M moves;
     int diffCt;
-    int state = 1;
+    int state = 0;
     int missingRow = -1;
     int missingCol = -1;
 
