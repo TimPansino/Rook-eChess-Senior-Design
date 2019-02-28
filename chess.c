@@ -68,8 +68,6 @@ void initPiece(Piece* p, char type, char side, char promotion) {
 }
 
 void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion) {
-  char c;
-
   if ((row1 == row2) && (col1 == col2)) {
     return;
   }
@@ -601,21 +599,19 @@ int canMove(B board, char side) {
 }
 
 int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
+    B tempBoard;
     M diff;
+    M dummyDiff;
     M moves;
     int diffCt;
     int state = 1;
-
-    int destRow1 = -1;
-    int destCol1 = -1;
-    int destRow2 = -1;
-    int destCol2 = -1;
-    int sourceRow1 = -1;
-    int sourceCol1 = -1;
-    int sourceRow2 = -1;
-    int sourceCol2 = -1;
     int missingRow = -1;
     int missingCol = -1;
+
+    move.destRow = -1;
+    move.destCol = -1;
+    move.sourceRow = -1;
+    move.sourceCol = -1;
 
     diffCt = diffBoards(newBoard, oldBoard, diff);
     initMove(move);
@@ -632,29 +628,27 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
         for (int i = 0; i < 8; i++) {
           if (diff[i][j] == 1) {
             if (newBoard[i][j].side == side) {
-              if (destCol1 == -1) {
-                  destRow1 = j;
-                  destCol1 = i;
-              }
-              else if (destCol2 == -1){
-                destRow2 = j;
-                destCol2 = i;
+              if (move.destCol == -1) {
+                  move.destRow = j;
+                  move.destCol = i;
               }
               else {
-                state = -1;
+                if (newBoard[i][j].type == 'K') {
+                  move.destRow = j;
+                  move.destCol = i;
+                }
               }
             }
             else if ((newBoard[i][j].side == 0) && (oldBoard[i][j].side == side)) {
-              if (sourceCol1 == -1) {
-                  sourceRow1 = j;
-                  sourceCol1 = i;
+              if (move.sourceCol == -1) {
+                  move.sourceRow = j;
+                  move.sourceCol = i;
               }
               else if (sourceCol2 == -1) {
-                sourceRow2 = j;
-                sourceCol2 = i;
-              }
-              else {
-                state = -1;
+                if (oldBoard[i][j].type == 'K') {
+                  move.sourceRow = j;
+                  move.sourceCol = i;
+                }
               }
             }
             else if (newBoard[i][j].side == 0) {
@@ -678,12 +672,10 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       return -1;
     }
 
-    // Debug
-    printf("Ct: %d\nS: %d | %d\nD: %d | %d\nM: %d\n", diffCt, sourceRow1, sourceRow2, destRow1, destRow2, missingRow);
-
     // Set Colors
-    if ((diffCt == 1) && (sourceRow1 != -1)) {
-      validMoves(oldBoard, moves, sourceRow1, sourceCol1);
+    if ((diffCt == 1) && (move.sourceRow != -1)) {
+      // Indicate Possible Moves
+      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
       for (int j = 0; j < 8; j++) {
         for (int i = 0; i < 8; i++) {
           switch (moves[i][j]) {
@@ -709,50 +701,45 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
         }
       }
     }
-    else if ((diffCt == 2) && (destRow1 == -1) && (missingRow != -1)) {
+    else if ((diffCt == 2) && (move.sourceRow != -1) && (missingRow != -1)) {
       // Indicate Possible Capture
+      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
+      // TODO
     }
-    else if ((sourceRow2 == -1) && (destRow2 == -1)) {
-      if (validMoves(oldBoard, moves, sourceRow1, sourceCol1)) {
-        switch (moves[destCol1][destRow1]) {
-          case -1:
-            colors[destCol1][destRow1] = COLOR_ORIGIN;
-            break;
-
-          case 1:
-            colors[destCol1][destRow1] = COLOR_POSSIBLE;
-            break;
-
-          case 2:
-            colors[destCol1][destRow1] = COLOR_CAPTURE;
-            break;
-
-          case 3:
-            colors[destCol1][destRow1] = COLOR_SPECIAL;
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
-    else if (sourceRow2 != -1) {
-      //TODO: Enpassante
-      printf("Enpassante detected.\n");
-      if (newBoard[destCol1][destRow1].type == 'P') {
-        return 1;
-      }
-      else if (newBoard[destCol2][destRow2].type == 'P') {
-        return 1;
-      }
-      else {
+    else if ((move.sourceRow != -1) && (move.destRow != -1)) {
+      copyBoard(tempBoard, oldBoard);
+      validMoves(oldBoard, moves, move.sourceRow, move.sourceCol);
+      if (moves[move.destCol][move.destRow] == 0) {
         state = -1;
       }
-    }
-    else if ((sourceRow2 != -1) && (destRow2 != -1)) {
-      //TODO: Castling
-      printf("Castling detected.\n");
-      state = -1;
+      else {
+        movePiece(tempBoard, move.sourceRow, move.sourceCol, move.destRow, move.destCol, 1);
+
+        printf("\n\n\n");
+        printf("Temp Board\n");
+        printBoard(tempBoard);
+        printf("Old Board\n");
+        printBoard(oldBoard);
+        printf("New Board\n");
+        printBoard(newBoard);
+        printf("\n\n\n");
+        
+
+        if (diffBoards(tempBoard, newBoard, dummyDiff) != 0) {
+          state = -1;
+        }
+        else {
+          state = 1;
+
+          for (int j = 0; j < 8; j++) {
+            for (int i = 0; i < 8; i++) {
+              if (diff[j][i]) {
+                colors[j][i] = COLOR_ACCEPTED;
+              }
+            }
+          }
+        }
+      }
     }
     else {
       state = -1;

@@ -25,7 +25,7 @@
 #define COLOR_CAPTURE   GREEN
 #define COLOR_SPECIAL   PURPLE
 #define COLOR_ORIGIN    WHITE
-#define COLOR_CHECK     YELLOW
+#define COLOR_ACCEPTED  GREEN
 
 // Type Definitions
 typedef char Color;
