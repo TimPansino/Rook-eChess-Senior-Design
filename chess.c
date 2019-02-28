@@ -760,9 +760,14 @@ int diffBoards(B newBoard, B oldBoard, M diff) {
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
-      if ((newBoard[i][j].type != oldBoard[i][j].type) || (newBoard[i][j].side != oldBoard[i][j].side)) {
-        diff[i][j] = 1;
-        ret += 1;
+      if ((newBoard[i][j].side != 0) || (oldBoard[i][j].side != 0)) {
+        if ((newBoard[i][j].type != oldBoard[i][j].type) || (newBoard[i][j].side != oldBoard[i][j].side)) {
+          diff[i][j] = 1;
+          ret += 1;
+        }
+        else {
+          diff[i][j] = 0;
+        }
       }
       else {
         diff[i][j] = 0;
