@@ -1,0 +1,6 @@
+d2d4
+a7a5
+d4d5
+c7c5
+d5c6
+exit

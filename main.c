@@ -395,10 +395,10 @@ int inputTest(void) {
 
   switch (status) {
     case 0:
-      printf("Error: Somehow exited prematurely.\n");
+      printf("Game Quit.\n");
       break;
     case 1:
-      printf("Error: Exited when only in check.\n");
+      printf("Game Quit While in Check.\n");
       break;
     case 2:
       printf("Game Over: Stalemate.\n");
@@ -412,7 +412,7 @@ int inputTest(void) {
       }
       break;
     default:
-      printf("Error: Invalide game state.\n");
+      printf("Error: Invalid game state.\n");
       break;
   }
 
