@@ -224,13 +224,13 @@ int inputTest(void) {
 
       printf("New Game Started.\n");
     }
-    else if ((strlen(c) == 6) && (c[0] == 'd') && (c[1] == 'e') && (c[2] == 'l') && (c[3] == ' ')) {
+    else if ((strlen(c) == 5) && (c[0] == 'd') && (c[1] == 'e') && (c[2] == 'l')) {
       // Delete a piece
       int x, y;
       int flag = 0;
 
-      if ((x = charToCoord(c[0])) == -1) flag = 1;
-      if ((y = charToCoord(c[1])) == -1) flag = 1;
+      if ((x = charToCoord(c[3])) == -1) flag = 1;
+      if ((y = charToCoord(c[4])) == -1) flag = 1;
       if (flag) {
         printf("Error: Move could not be parsed.\n");
       }
