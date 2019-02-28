@@ -190,6 +190,7 @@ int inputTest(void) {
     else if (strcmp(c, "force") == 0) {
       printf("Forced the board to accept current state.\n");
       copyBoard(prevBoard, curBoard);
+      check = 0;
       switch(side) {
         case White: {
           side = Black;
@@ -200,9 +201,14 @@ int inputTest(void) {
           break;
         }
       }
+
+      if ((status = gameStatus(curBoard, side)) > 1) {
+        break;
+      }
     }
     else if (strcmp(c, "skip") == 0) {
       printf("Skipping current turn.\n");
+      check = 0;
       switch(side) {
         case White: {
           side = Black;
@@ -212,6 +218,10 @@ int inputTest(void) {
           side = White;
           break;
         }
+      }
+
+      if ((status = gameStatus(curBoard, side)) > 1) {
+        break;
       }
     }
     else if (strcmp(c, "newgame") == 0) {
@@ -249,8 +259,8 @@ int inputTest(void) {
           validMoves(curBoard, moves, y, x);
           printMoves(curBoard, moves);
         }
-        check = 0;
       }
+      check = 1;
     }
     else if (strlen(c) == 2) {
       // Lift a piece to view colors
@@ -309,7 +319,6 @@ int inputTest(void) {
 
     if (check) {
       check = parseState(curBoard, prevBoard, side, colors, &curMove);
-      printf("Parse Ret: %d\n", check);
       if (check == 1) {
         copyBoard(prevBoard, curBoard);
         switch(side) {

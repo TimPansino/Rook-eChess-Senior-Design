@@ -575,9 +575,6 @@ int gameStatus(B board, char side) {
   check = checkStatus(board, side);
   stale = !canMove(board, side);
 
-  printf("Check: %d\n", check);
-  printf("Stale: %d\n", stale);
-
   return check | (stale << 1);
 }
 
@@ -587,7 +584,6 @@ int canMove(B board, char side) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if (board[i][j].side == side) {
-        printf("Checking Piece (%d, %d)\n", j, i);
         if (validMoves(board, moves, j, i)) {
           return 1;
         }
@@ -616,7 +612,14 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       return 0;
     }
     else if ((diffCt > 4) || (diffCt < 0)) {
-      state = -1;
+      for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+          if (diff[i][j]) {
+            colors[i][j] = COLOR_ERROR;
+          }
+        }
+      }
+      return -1;
     }
     else {
       for (int j = 0; j < 8; j++) {
@@ -655,18 +658,6 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       }
     }
 
-    // Catch errors
-    if (state == -1) {
-      for (int j = 0; j < 8; j++) {
-        for (int i = 0; i < 8; i++) {
-          if (diff[i][j]) {
-            colors[i][j] = COLOR_ERROR;
-          }
-        }
-      }
-      return -1;
-    }
-
     // Set Colors
     if ((diffCt == 1) && (move->sourceRow != -1)) {
       // Indicate Possible Moves
@@ -699,9 +690,16 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
     else if ((diffCt == 2) && (move->sourceRow != -1) && (missingRow != -1)) {
       // Indicate Possible Capture
       validMoves(oldBoard, moves, move->sourceRow, move->sourceCol);
-      // TODO
+      if (moves[missingCol][missingRow]) {
+        colors[missingCol][missingRow] = COLOR_CAPTURE;
+        colors[move->sourceCol][move->sourceRow] = COLOR_ORIGIN;
+      }
+      else {
+        state = -1;
+      }
     }
     else if ((move->sourceRow != -1) && (move->destRow != -1)) {
+      // Validate Movement
       copyBoard(tempBoard, oldBoard);
       validMoves(oldBoard, moves, move->sourceRow, move->sourceCol);
       if (moves[move->destCol][move->destRow] == 0) {
