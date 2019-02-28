@@ -3,6 +3,7 @@
 #include "pieces.h"
 #include "drivers.h"
 #include "chess.h"
+#include "debug.h"
 
 // Function Definitions
 void defaultBoard(B board) {
@@ -66,7 +67,9 @@ void initPiece(Piece* p, char type, char side, char promotion) {
   p->unmoved = 1;
 }
 
-void movePiece(B board, int row1, int col1, int row2, int col2) {
+void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion) {
+  char c;
+
   if ((row1 == row2) && (col1 == col2)) {
     return;
   }
@@ -91,11 +94,11 @@ void movePiece(B board, int row1, int col1, int row2, int col2) {
   if (board[col2][row2].type == 'K') {
     switch (col2-col1) {
       case 2:
-        movePiece(board, row1, 7, row2, col2-1);
+        movePiece(board, row1, 7, row2, col2-1, 1);
         break;
 
       case -2:
-        movePiece(board, row1, 0, row2, col2+1);
+        movePiece(board, row1, 0, row2, col2+1, 1);
         break;
 
       default:
@@ -125,6 +128,12 @@ void movePiece(B board, int row1, int col1, int row2, int col2) {
 
       default:
         break;
+    }
+  }
+
+  if ((!ignorePromotion) && ((row2 == 0) || (row2 == 7))) {
+    if ((board[col2][row2].type == 'P') && (board[col2][row2].promotion == 0)) {
+      board[col2][row2].promotion = pawnPromote();
     }
   }
 
@@ -522,7 +531,7 @@ int validMoves(B board, M moves, int row, int col) {
     for (int i = 0; i < 8; i++) {
       if (moves[j][i] != 0) {
         copyBoard(newBoard, board);
-        movePiece(newBoard, row, col, i, j);
+        movePiece(newBoard, row, col, i, j, 1);
         if (checkStatus(newBoard, side)) {
           moves[j][i] = 0;
         }

@@ -5,7 +5,7 @@ void initPiece(Piece* p, char type, char side, char promotion);
 void blankBoard(B board);
 void defaultBoard(B board);
 void blankMoves(M board);
-void movePiece(B board, int row1, int col1, int row2, int col2);
+void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion);
 int checkStatus(B board, char side);
 int possibleMoves(B board, M moves, int row, int col);
 int validMoves(B board, M moves, int row, int col);

@@ -77,9 +77,9 @@ int testChessLibrary(void) {
   sourceCol = 2;
   testRow = 6;
   testCol = 2;
-  movePiece(curBoard, 0, 2, 4, 0);
+  movePiece(curBoard, 0, 2, 4, 0, 1);
 
-  movePiece(curBoard, originRow, originCol, sourceRow, sourceCol);
+  movePiece(curBoard, originRow, originCol, sourceRow, sourceCol, 1);
   copyBoard(prevBoard, curBoard);
   printBoard(prevBoard);
   prevBoard[sourceCol][sourceRow].unmoved = 1;
@@ -87,7 +87,7 @@ int testChessLibrary(void) {
   validMoves(prevBoard, moves, sourceRow, sourceCol);
   printMoves(prevBoard, moves);
 
-  movePiece(curBoard, sourceRow, sourceCol, testRow, testCol);
+  movePiece(curBoard, sourceRow, sourceCol, testRow, testCol, 1);
   printBoard(curBoard);
   printf("Valid Move: %d\n\n", parseState(curBoard, prevBoard, White, colors, &move));
 
@@ -128,7 +128,7 @@ int testCastling(void) {
   printMoves(curBoard, moves);
 
   if (moves[5][0] != 0) {
-    movePiece(curBoard, 0, 4, 0, 6);
+    movePiece(curBoard, 0, 4, 0, 6, 1);
     printBoard(curBoard);
     parseState(curBoard, prevBoard, side, colors, &move);
     printColors(colors);
@@ -151,7 +151,6 @@ int inputTest(void) {
   char side = White;
   int check = 0;
   int status = 0;
-  int parse = 0;
 
   defaultBoard(curBoard);
   defaultBoard(prevBoard);
@@ -174,7 +173,8 @@ int inputTest(void) {
     else if (strcmp(c, "help") == 0) {
       printf("help: This menu.\n");
       printf("b2c2: Movement example. \n");
-      printf("d4: Lift piece example. \n");
+      printf("d4: Lift piece example (replaces in same spot afterwards). \n");
+      printf("dela1: Delete piece example. \n");
       printf("skip: Ends current turn.\n");
       printf("force: Ends current turn and accepts board state.\n");
       printf("reset: Put the board back to the last accepted state.\n");
@@ -298,7 +298,7 @@ int inputTest(void) {
         printf("Error: Move could not be parsed.\n");
       }
       else {
-        movePiece(curBoard, y, x, yy, xx);
+        movePiece(curBoard, y, x, yy, xx, 0);
         check = 1;
       }
     }

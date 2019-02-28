@@ -37,10 +37,20 @@ void printBoard(B board) {
     printf("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       if (board[i][j].side == 1) {
-        c = board[i][j].type;
+        if ((board[i][j].type == 'P') && (board[i][j].promotion)) {
+          c = board[i][j].promotion;
+        }
+        else {
+          c = board[i][j].type;
+        }
       }
       else if (board[i][j].side == 2) {
-        c = board[i][j].type + 32;
+        if ((board[i][j].type == 'P') && (board[i][j].promotion)) {
+          c = board[i][j].promotion + 32;
+        }
+        else {
+          c = board[i][j].type + 32;
+        }
       }
       else {
         c = '-';
@@ -207,5 +217,36 @@ int charToCoord(char c) {
   }
   else {
     return -1;
+  }
+}
+
+char pawnPromote(void) {
+  char c = 1;
+  while (1) {
+    if (c == 0) {
+      printf("Error: Can only promote to Q, B, R, or N.\n");
+    }
+    printf("Promote Pawn: ");
+    scanf(" %c", &c);
+
+    switch(c) {
+      case 'q':
+      case 'r':
+      case 'b':
+      case 'n':
+        return c + ('A' - 'a'); // Converts to uppercase
+        break;
+
+      case 'Q':
+      case 'R':
+      case 'B':
+      case 'N':
+        return c;
+        break;
+
+      default: 
+        c = 0;
+        break;
+    }
   }
 }

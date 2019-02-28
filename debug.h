@@ -8,3 +8,4 @@ void printColors(C board);
 void printColor(C c, int x, int y);
 void printTurn(int side);
 int charToCoord(char c);
+char pawnPromote(void);
