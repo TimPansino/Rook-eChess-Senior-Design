@@ -6,7 +6,6 @@
 void ledTest(void) {
   B curBoard;
   B prevBoard;
-  M moves;
   Move move;
   C colors;
   int state;

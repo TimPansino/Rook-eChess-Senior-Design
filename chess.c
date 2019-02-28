@@ -3,7 +3,7 @@
 #include "pieces.h"
 #include "drivers.h"
 #include "chess.h"
-#include "debug.h"
+//#include "debug.h"
 
 // Function Definitions
 void defaultBoard(B board) {
