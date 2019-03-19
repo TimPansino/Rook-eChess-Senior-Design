@@ -322,7 +322,6 @@ int inputTest(void) {
 
         // Display Status
         check = parseState(curBoard, prevBoard, side, colors, &move);
-        printf("Parse Ret: %d\n", check);
         printColors(colors);
 
         // Replace Piece
@@ -332,7 +331,7 @@ int inputTest(void) {
         // Display Moves
         if (side == curBoard[x][y].side) {
           validMoves(curBoard, moves, y, x);
-          printMoves(curBoard, moves);
+          //printMoves(curBoard, moves);
         }
         check = 0;
       }

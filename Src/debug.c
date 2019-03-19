@@ -117,8 +117,6 @@ void printMoves(B board, M moves) {
 }
 
 void printColors(C board) {
-  char c;
-
   printf(" ");
   if (PRINT_TYPE) {
     for (int i = 0; i < 8; i++) {
@@ -148,34 +146,33 @@ void printColors(C board) {
     for (int i = 0; i < 8; i++) {
       switch(board[i][j]) {
         case RED:
-          c = 'R';
+          printf(TRED " R " TRESET);
           break;
         case GREEN:
-          c = 'G';
+          printf(TGRN " G " TRESET);
           break;
         case BLUE:
-          c = 'B';
+          printf(TBLU " B " TRESET);
           break;
         case YELLOW:
-          c = 'Y';
+          printf(TYEL " Y " TRESET);
           break;
         case MAGENTA:
-          c = 'M';
+          printf(TMAG " M " TRESET);
           break;
         case CYAN:
-          c = 'C';
+          printf(TCYN " C " TRESET);
           break;
         case WHITE:
-          c = 'W';
+          printf(" W ");
           break;
         case OFF:
-          c = '-';
+          printf(" - ");
           break;
         default:
-          c = '?';
+          printf(" ? ");
           break;
       }
-      printf(" %c ", c);
     }
     printf("\n");
   }
