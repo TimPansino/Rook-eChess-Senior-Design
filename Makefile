@@ -28,10 +28,9 @@ objects: $(OBJS)
 
 run: main
 	./main
-	$(MAKE) clean
 
 main: objects
-	$(CC) $(CFLAGS) $(ODIR)/*.o -o main
+	$(CC) $(CFLAGS) $(ODIR)/*.o -o "Build/main" && cp "Build/main" ./
 
 ## rule to clean up object files and executable so that you can rebuild
 
