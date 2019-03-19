@@ -2,32 +2,44 @@
 ## Makefile
 ##
 
+## Define Fake Targets
+.PHONY: clean build run
+
 ## Define compiler
 
 CC	= gcc
 
+## Define Directories
+ODIR = Build
+SDIR = Src
+IDIR = Inc
+_OBJS = main.o debug.o chess.o micro.o drivers.o
+OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
+
 ## Define flags
 
-CFLAGS	= -Wall -O3 -g
+CFLAGS	= -Wall -O3 -g -I $(IDIR)
 
 ## Define targets
 
 default: run
 all: main
-objects: main.o debug.o chess.o micro.o drivers.o
+objects: $(OBJS) 
+
 run: main
 	./main
 	$(MAKE) clean
 
 main: objects
-	$(CC) $(CFLAGS) main.o debug.o chess.o micro.o drivers.o -o main
+	$(CC) $(CFLAGS) $(ODIR)/*.o -o main
 
 ## rule to clean up object files and executable so that you can rebuild
 
 clean:
-	rm -rf *.o main
+	rm -rf *.o main Build
 
 ## rule to compile .c to .o
 
-%.o:	%.c
-	$(CC) $(CFLAGS) -c $<
+$(ODIR)/%.o:	$(SDIR)/%.c
+	mkdir -p Build
+	$(CC) $(CFLAGS) -c -o "$@" "$<"
