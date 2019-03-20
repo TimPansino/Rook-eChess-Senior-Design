@@ -13,7 +13,7 @@ CC	= gcc
 ODIR = Build
 SDIR = Src
 IDIR = Inc
-_OBJS = main.o debug.o chess.o micro.o drivers.o
+_OBJS = main.o debug.o chess.o drivers.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 ## Define flags
@@ -24,7 +24,7 @@ CFLAGS	= -Wall -O3 -g -I $(IDIR)
 
 default: run
 all: main
-objects: $(OBJS) 
+objects: $(OBJS)
 
 run: main
 	./main
