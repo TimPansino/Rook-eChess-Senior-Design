@@ -5,7 +5,6 @@
 #include "drivers.h"
 #include "chess.h"
 #include "debug.h"
-#include "micro.h"
 
 int testChessLibrary(void);
 int testLedDrivers(void);
@@ -274,7 +273,7 @@ int inputTest(void) {
         tempPiece.side = curBoard[x][y].side;
         tempPiece.promotion = curBoard[x][y].promotion;
         tempPiece.unmoved = 0;
-        
+
         curBoard[x][y].type = 0;
         curBoard[x][y].side = 0;
         check = 1;

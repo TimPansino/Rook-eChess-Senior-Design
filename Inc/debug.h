@@ -1,3 +1,4 @@
+// Defines
 #define PRINT_TYPE 1
 // 0: Print C Array Indexes
 // 1: Print Chess Board Standard Indexes
@@ -13,6 +14,8 @@
 #define TWHT   "\x1B[37m"
 #define TRESET "\x1B[0m"
 
+// Function Definitions
+void Print(const char* format, ...);
 void printBoard(B board);
 void printMoves(B board, M moves);
 void printColors(C board);

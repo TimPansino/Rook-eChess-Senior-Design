@@ -1,11 +1,20 @@
 // Includes
 #include <stdio.h>
+#include <stdarg.h>
 #include "pieces.h"
 #include "drivers.h"
 #include "chess.h"
 #include "debug.h"
 
 // Functions
+void Print(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  //va_start(args, argc);
+  vprintf(format, args);
+  va_end(args);
+}
+
 void printBoard(B board) {
   char c;
 

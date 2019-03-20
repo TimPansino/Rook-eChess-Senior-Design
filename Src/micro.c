@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include "pieces.h"
 #include "chess.h"
 #include "micro.h"
@@ -30,4 +31,15 @@ void ledTest(void) {
   //printf("Check: %d\n", check);
 
   return;
+}
+
+void Print(const char* format, ...) {
+  va_list args;
+  char s[1024];
+
+  va_start(args, format);
+  //va_start(args, argc);
+  vsprintf(s, format, args);
+  transmitString(s);
+  va_end(args);
 }
