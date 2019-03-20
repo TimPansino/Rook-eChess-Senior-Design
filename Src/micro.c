@@ -27,8 +27,8 @@ void ledTest(void) {
   state = parseState(curBoard, prevBoard, White, colors, &move);
   check = gameStatus(curBoard, Black);
 
-  //printf("State: %d\n", state);
-  //printf("Check: %d\n", check);
+  //Print("State: %d\n", state);
+  //Print("Check: %d\n", check);
 
   return;
 }

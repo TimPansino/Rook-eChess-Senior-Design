@@ -91,11 +91,11 @@ int testChessLibrary(void) {
 
   movePiece(curBoard, sourceRow, sourceCol, testRow, testCol, 1);
   printBoard(curBoard);
-  printf("Valid Move: %d\n\n", parseState(curBoard, prevBoard, White, colors, &move));
+  Print("Valid Move: %d\n\n", parseState(curBoard, prevBoard, White, colors, &move));
 
 
-  //printf("White Check Status: %d\n", gameStatus(curBoard, White));
-  printf("Black Check Status: %d\n\n", gameStatus(curBoard, Black));
+  //Print("White Check Status: %d\n", gameStatus(curBoard, White));
+  Print("Black Check Status: %d\n\n", gameStatus(curBoard, Black));
 
   return 0;
 }
@@ -136,7 +136,7 @@ int testCastling(void) {
     printColors(colors);
   }
   else {
-    printf("Castling failed.\n");
+    Print("Castling failed.\n");
   }
 
   return 0;
@@ -180,38 +180,38 @@ int inputTest(void) {
   defaultBoard(prevBoard);
   blankColors(colors);
 
-  printf("\nWelcome to my half-baked chess simulator.\nType \"help\" for options!\n");
-  printf("\n");
+  Print("\nWelcome to my half-baked chess simulator.\nType \"help\" for options!\n");
+  Print("\n");
   printBoard(curBoard);
 
   while (1) {
     printTurn(side);
     status = gameStatus(curBoard, side);
-    printf("Game Status: %d\n", status);
-    printf(">");
+    Print("Game Status: %d\n", status);
+    Print(">");
     scanf("%s", c);
     if (strcmp(c, "exit") == 0) {
-      printf("Exiting...\n");
+      Print("Exiting...\n");
       break;
     }
     else if (strcmp(c, "help") == 0) {
-      printf("help: This menu.\n");
-      printf("b2c2: Movement example.\n");
-      printf("d4: Lift piece example (replaces in same spot afterwards).\n");
-      printf("dela1: Delete piece example.\n");
-      printf("pute5: Replace last deleted piece example.\n");
-      printf("skip: Ends current turn.\n");
-      printf("force: Ends current turn and accepts board state.\n");
-      printf("reset: Put the board back to the last accepted state.\n");
-      printf("newgame: Start a new game.\n");
-      printf("exit: Leave the simulator.\n");
+      Print("help: This menu.\n");
+      Print("b2c2: Movement example.\n");
+      Print("d4: Lift piece example (replaces in same spot afterwards).\n");
+      Print("dela1: Delete piece example.\n");
+      Print("pute5: Replace last deleted piece example.\n");
+      Print("skip: Ends current turn.\n");
+      Print("force: Ends current turn and accepts board state.\n");
+      Print("reset: Put the board back to the last accepted state.\n");
+      Print("newgame: Start a new game.\n");
+      Print("exit: Leave the simulator.\n");
     }
     else if (strcmp(c, "reset") == 0) {
-      printf("Reset board to last state.\n");
+      Print("Reset board to last state.\n");
       copyBoard(curBoard, prevBoard);
     }
     else if (strcmp(c, "force") == 0) {
-      printf("Forced the board to accept current state.\n");
+      Print("Forced the board to accept current state.\n");
       copyBoard(prevBoard, curBoard);
       check = 0;
       switch(side) {
@@ -230,7 +230,7 @@ int inputTest(void) {
       }
     }
     else if (strcmp(c, "skip") == 0) {
-      printf("Skipping current turn.\n");
+      Print("Skipping current turn.\n");
       check = 0;
       switch(side) {
         case White: {
@@ -256,7 +256,7 @@ int inputTest(void) {
       defaultBoard(prevBoard);
       blankColors(colors);
 
-      printf("New Game Started.\n");
+      Print("New Game Started.\n");
     }
     else if ((strlen(c) == 5) && (c[0] == 'd') && (c[1] == 'e') && (c[2] == 'l')) {
       // Delete a piece
@@ -266,7 +266,7 @@ int inputTest(void) {
       if ((x = charToCoord(c[3])) == -1) flag = 1;
       if ((y = charToCoord(c[4])) == -1) flag = 1;
       if (flag) {
-        printf("Error: Move could not be parsed.\n");
+        Print("Error: Move could not be parsed.\n");
       }
       else {
         tempPiece.type = curBoard[x][y].type;
@@ -287,10 +287,10 @@ int inputTest(void) {
       if ((x = charToCoord(c[3])) == -1) flag = 1;
       if ((y = charToCoord(c[4])) == -1) flag = 1;
       if (flag) {
-        printf("Error: Move could not be parsed.\n");
+        Print("Error: Move could not be parsed.\n");
       }
       else if (tempPiece.side == 0) {
-        printf("Error: No piece to replace.\n");
+        Print("Error: No piece to replace.\n");
       }
       else {
         curBoard[x][y].type = tempPiece.type;
@@ -310,7 +310,7 @@ int inputTest(void) {
       if ((x = charToCoord(c[0])) == -1) flag = 1;
       if ((y = charToCoord(c[1])) == -1) flag = 1;
       if (flag) {
-        printf("Error: Move could not be parsed.\n");
+        Print("Error: Move could not be parsed.\n");
       }
       else {
         // Lift Piece
@@ -345,7 +345,7 @@ int inputTest(void) {
       if ((yy = charToCoord(c[3])) == -1) flag = 1;
 
       if (flag) {
-        printf("Error: Move could not be parsed.\n");
+        Print("Error: Move could not be parsed.\n");
       }
       else {
         movePiece(curBoard, y, x, yy, xx, 0);
@@ -353,7 +353,7 @@ int inputTest(void) {
       }
     }
     else {
-      printf("Error: Could not parse command.\n");
+      Print("Error: Could not parse command.\n");
     }
 
     if (check) {
@@ -369,8 +369,8 @@ int inputTest(void) {
             break;
         }
 
-        printf("Move Accepted.\n");
-        printf("Move: %c%c-%c%c\n", move.sourceCol+'A', move.sourceRow+'1', move.destCol+'A', move.destRow+'1');
+        Print("Move Accepted.\n");
+        Print("Move: %c%c-%c%c\n", move.sourceCol+'A', move.sourceRow+'1', move.destCol+'A', move.destRow+'1');
         printColors(colors);
         printBoard(curBoard);
         if ((status = gameStatus(curBoard, side)) > 1) {
@@ -378,39 +378,39 @@ int inputTest(void) {
         }
       }
       else {
-        printf("Board State Invalid.\n");
+        Print("Board State Invalid.\n");
         printColors(colors);
         printBoard(curBoard);
-        printf("Use \"reset\" to go back.\n");
+        Print("Use \"reset\" to go back.\n");
       }
       check = 0;
     }
     else {
-      printf("\n");
+      Print("\n");
       printBoard(curBoard);
     }
   }
 
   switch (status) {
     case 0:
-      printf("Game Quit.\n");
+      Print("Game Quit.\n");
       break;
     case 1:
-      printf("Game Quit While in Check.\n");
+      Print("Game Quit While in Check.\n");
       break;
     case 2:
-      printf("Game Over: Stalemate.\n");
+      Print("Game Over: Stalemate.\n");
       break;
     case 3:
       if (side == White) {
-        printf("Game Over: Black Wins!\n");
+        Print("Game Over: Black Wins!\n");
       }
       else {
-        printf("Game Over: White Wins!\n");
+        Print("Game Over: White Wins!\n");
       }
       break;
     default:
-      printf("Error: Invalid game state.\n");
+      Print("Error: Invalid game state.\n");
       break;
   }
 

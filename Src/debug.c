@@ -18,18 +18,18 @@ void Print(const char* format, ...) {
 void printBoard(B board) {
   char c;
 
-  printf(" ");
+  Print(" ");
   if (PRINT_TYPE) {
     for (int i = 0; i < 8; i++) {
-      printf("  %c", 'A' + i);
+      Print("  %c", 'A' + i);
     }
   }
   else {
     for (int i = 0; i < 8; i++) {
-      printf("  %d", i);
+      Print("  %d", i);
     }
   }
-  printf("\n");
+  Print("\n");
 
   for (int k = 0; k < 8; k++) {
     int j;
@@ -43,7 +43,7 @@ void printBoard(B board) {
         break;
     }
 
-    printf("%d:", j + PRINT_TYPE);
+    Print("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       if (board[i][j].side == 1) {
         if ((board[i][j].type == 'P') && (board[i][j].promotion)) {
@@ -64,29 +64,29 @@ void printBoard(B board) {
       else {
         c = '-';
       }
-      printf(" %c ", c);
+      Print(" %c ", c);
     }
-    printf("\n");
+    Print("\n");
   }
-  printf("\n");
+  Print("\n");
   return;
 }
 
 void printMoves(B board, M moves) {
   char c;
 
-  printf(" ");
+  Print(" ");
   if (PRINT_TYPE) {
     for (int i = 0; i < 8; i++) {
-      printf("  %c", 'A' + i);
+      Print("  %c", 'A' + i);
     }
   }
   else {
     for (int i = 0; i < 8; i++) {
-      printf("  %d", i);
+      Print("  %d", i);
     }
   }
-  printf("\n");
+  Print("\n");
 
   for (int k = 0; k < 8; k++) {
     int j;
@@ -100,7 +100,7 @@ void printMoves(B board, M moves) {
         break;
     }
 
-    printf("%d:", j + PRINT_TYPE);
+    Print("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       switch(moves[i][j]) {
         case -1:
@@ -117,27 +117,27 @@ void printMoves(B board, M moves) {
           c = '-';
           break;
       }
-      printf(" %c ", c);
+      Print(" %c ", c);
     }
-    printf("\n");
+    Print("\n");
   }
-  printf("\n");
+  Print("\n");
   return;
 }
 
 void printColors(C board) {
-  printf(" ");
+  Print(" ");
   if (PRINT_TYPE) {
     for (int i = 0; i < 8; i++) {
-      printf("  %c", 'A' + i);
+      Print("  %c", 'A' + i);
     }
   }
   else {
     for (int i = 0; i < 8; i++) {
-      printf("  %d", i);
+      Print("  %d", i);
     }
   }
-  printf("\n");
+  Print("\n");
 
   for (int k = 0; k < 8; k++) {
     int j;
@@ -151,41 +151,41 @@ void printColors(C board) {
         break;
     }
 
-    printf("%d:", j + PRINT_TYPE);
+    Print("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       switch(board[i][j]) {
         case RED:
-          printf(TRED " R " TRESET);
+          Print(TRED " R " TRESET);
           break;
         case GREEN:
-          printf(TGRN " G " TRESET);
+          Print(TGRN " G " TRESET);
           break;
         case BLUE:
-          printf(TBLU " B " TRESET);
+          Print(TBLU " B " TRESET);
           break;
         case YELLOW:
-          printf(TYEL " Y " TRESET);
+          Print(TYEL " Y " TRESET);
           break;
         case MAGENTA:
-          printf(TMAG " M " TRESET);
+          Print(TMAG " M " TRESET);
           break;
         case CYAN:
-          printf(TCYN " C " TRESET);
+          Print(TCYN " C " TRESET);
           break;
         case WHITE:
-          printf(" W ");
+          Print(" W ");
           break;
         case OFF:
-          printf(" - ");
+          Print(" - ");
           break;
         default:
-          printf(" ? ");
+          Print(" ? ");
           break;
       }
     }
-    printf("\n");
+    Print("\n");
   }
-  printf("\n");
+  Print("\n");
   return;
 }
 
@@ -194,19 +194,19 @@ void printColor(C c, int x, int y) {
   char green = (c[y][x] & GREEN) >> G_SHIFT;
   char blue = (c[y][x] & BLUE) >> B_SHIFT;
 
-  printf("Address (%d, %d): %d%d%d\n", x, y, red, green, blue);
+  Print("Address (%d, %d): %d%d%d\n", x, y, red, green, blue);
 }
 
 void printTurn(int side) {
   switch (side) {
     case White:
-      printf("Current Turn: White\n");
+      Print("Current Turn: White\n");
       break;
     case Black:
-      printf("Current Turn: Black\n");
+      Print("Current Turn: Black\n");
       break;
     default:
-      printf("Current Turn: INVALID\n");
+      Print("Current Turn: INVALID\n");
       break;
   }
 }
@@ -230,9 +230,9 @@ char pawnPromote(void) {
   char c = 1;
   while (1) {
     if (c == 0) {
-      printf("Error: Can only promote to Q, B, R, or N.\n");
+      Print("Error: Can only promote to Q, B, R, or N.\n");
     }
-    printf("Promote Pawn: ");
+    Print("Promote Pawn: ");
     scanf(" %c", &c);
 
     switch(c) {
