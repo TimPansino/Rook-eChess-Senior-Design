@@ -15,10 +15,8 @@
 #define TRESET "\x1B[0m"
 
 // Function Definitions
-void Print(const char* format, ...);
 void printBoard(B board);
 void printMoves(B board, M moves);
 void printColors(C board);
 void printColor(C c, int x, int y);
 void printTurn(int side);
-int charToCoord(char c);

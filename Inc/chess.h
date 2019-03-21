@@ -1,6 +1,7 @@
 #include "drivers.h"
 
 // Function Declarations
+int commandLine(void);
 void initPiece(Piece* p, char type, char side, char promotion);
 void blankBoard(B board);
 void defaultBoard(B board);
@@ -16,3 +17,4 @@ int canMove(B board, char side);
 int gameStatus(B board, char side);
 void initMove(Move* move);
 int parseState(B newBoard, B oldBoard, int side, C colors, Move* move);
+int charToCoord(char c);

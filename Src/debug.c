@@ -7,14 +7,6 @@
 #include "debug.h"
 
 // Functions
-void Print(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  //va_start(args, argc);
-  vprintf(format, args);
-  va_end(args);
-}
-
 void printBoard(B board) {
   char c;
 
@@ -208,21 +200,6 @@ void printTurn(int side) {
     default:
       Print("Current Turn: INVALID\n");
       break;
-  }
-}
-
-int charToCoord(char c) {
-  if (c >= 'A' && c <= 'H') {
-    return c - 'A';
-  }
-  else if (c >= 'a' && c <= 'h') {
-    return c - 'a';
-  }
-  else if (c >= '1' && c <= '8') {
-    return c - '1';
-  }
-  else {
-    return -1;
   }
 }
 
