@@ -14,12 +14,12 @@
 #include "data.h"
 #include "protos.h"
 #include "drivers.h"
+#include "book_contents.h"
 
 
 /* the opening book file, declared here so we don't have to include stdio.h in
    a header file */
 FILE *book_file;
-
 
 /* open_book() opens the opening book file and initializes the random number
    generator so we play random book moves. */
@@ -27,7 +27,8 @@ FILE *book_file;
 void open_book()
 {
 	srand(time(NULL));
-	book_file = fopen("book.txt", "r");
+	//book_file = fopen("book.txt", "r");
+	book_file = fmemopen(book_contents, strlen (book_contents), "r");
 	if (!book_file)
 		Print("Opening book missing.\n");
 }
