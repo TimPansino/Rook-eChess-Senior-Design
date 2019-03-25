@@ -13,7 +13,7 @@ CC	= gcc
 ODIR = Build
 SDIR = Src
 IDIR = Inc
-_OBJS = main.o debug.o chess.o drivers.o
+_OBJS = main.o debug.o chess.o drivers.o ai.o board.o book.o data.o eval.o search.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 ## Define flags

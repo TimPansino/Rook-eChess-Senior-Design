@@ -1,9 +1,10 @@
 // Includes
 #include <stdio.h>
+#include <string.h>
 #include "pieces.h"
 #include "drivers.h"
 #include "chess.h"
-//#include "debug.h"
+#include "debug.h"
 
 // Function Definitions
 int commandLine(void) {
@@ -389,6 +390,10 @@ void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromot
   }
 
   return;
+}
+
+inline void makeMove(B board, Move m) {
+  movePiece(board, m.sourceRow, m.sourceCol, m.destRow, m.destCol, 1);
 }
 
 int possibleMoves(B board, M moves, int row, int col) {
@@ -1057,4 +1062,41 @@ int charToCoord(char c) {
   else {
     return -1;
   }
+}
+
+char strToMove(char* s, Move* move) {
+  int size = strlen(s);
+  if ((size != 4) && (size != 5)) {
+    move->sourceCol = -1;
+    move->sourceRow = -1;
+    move->destCol = -1;
+    move->destRow = -1;
+    return -1;
+  }
+  else {
+    move->sourceCol = charToCoord(s[0]);
+    move->sourceRow = charToCoord(s[1]);
+    move->destCol = charToCoord(s[2]);
+    move->destRow = charToCoord(s[3]);
+
+    if ((move->sourceCol < 0) || (move->sourceCol > 7)) return -1;
+    if ((move->sourceRow < 0) || (move->sourceRow > 7)) return -1;
+    if ((move->destCol < 0) || (move->destCol > 7)) return -1;
+    if ((move->destRow < 0) || (move->destRow > 7)) return -1;
+  }
+
+  if ((s[4] >= 'a') && (s[4] <= 'z')) s[4] += ('A' - 'a');
+
+  return s[4];
+}
+
+void moveToStr(Move* move, char *s, int promote) {
+  s[5] = '\0';
+  s[0] = move->sourceCol + 'a';
+  s[1] = move->sourceRow + '1';
+  s[2] = move->destCol + 'a';
+  s[3] = move->destRow + '1';
+
+  // Promotion Here
+  s[4] = '\0';
 }

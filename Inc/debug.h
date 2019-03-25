@@ -1,3 +1,5 @@
+#ifndef DEBUG_H
+#define DEBUG_H
 // Defines
 #define PRINT_TYPE 1
 // 0: Print C Array Indexes
@@ -20,3 +22,5 @@ void printMoves(B board, M moves);
 void printColors(C board);
 void printColor(C c, int x, int y);
 void printTurn(int side);
+
+#endif

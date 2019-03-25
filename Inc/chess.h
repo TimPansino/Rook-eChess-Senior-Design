@@ -1,3 +1,5 @@
+#ifndef CHESS_H
+#define CHESS_H
 #include "drivers.h"
 
 // Function Declarations
@@ -7,6 +9,7 @@ void blankBoard(B board);
 void defaultBoard(B board);
 void blankMoves(M board);
 void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion);
+void makeMove(B board, Move m);
 int checkStatus(B board, char side);
 int possibleMoves(B board, M moves, int row, int col);
 int validMoves(B board, M moves, int row, int col);
@@ -18,3 +21,7 @@ int gameStatus(B board, char side);
 void initMove(Move* move);
 int parseState(B newBoard, B oldBoard, int side, C colors, Move* move);
 int charToCoord(char c);
+char strToMove(char* s, Move* move);
+void moveToStr(Move* move, char *s, int promote);
+
+#endif

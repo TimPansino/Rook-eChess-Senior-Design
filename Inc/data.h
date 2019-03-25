@@ -43,4 +43,11 @@ extern char piece_char[6];
 extern int init_color[64];
 extern int init_piece[64];
 
+/*
+extern BOOL ftime_ok;
+extern int computer_side;
+extern int m;
+extern int post;
+*/
+
 #endif /* DATA_H_ */

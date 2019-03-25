@@ -1,12 +1,33 @@
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <time.h>
+#include <sys/timeb.h>
+
 #include "ai.h"
 #include "defs.h"
+#include "data.h"
+#include "protos.h"
+
+void Print(const char* format, ...);
+
+BOOL ftime_ok;
+int computer_side;
+int m;
+int post;
 
 void aiInit(int user_side) {
+	post = 0;
+	ftime_ok = FALSE;
+
 	init_board();
 	gen();
 	init_board();
 	open_book();
 	gen();
+
 	computer_side = EMPTY;
 	max_time = 1 << 25;
 	max_depth = 4;
@@ -19,7 +40,7 @@ void aiInit(int user_side) {
 	}
 }
 
-void aiMakeMove(void) {
+void aiMakeMove(char* s) {
     if (side == computer_side) {
         think(post);
         if (!pv[0][0].u) {
@@ -30,7 +51,6 @@ void aiMakeMove(void) {
         ply = 0;
         gen();
         print_result();
-        Print("AI Move: %s\n", s);
     }
 }
 
@@ -168,23 +188,23 @@ void print_board()
 {
     int i;
 
-    printf("\n8 ");
+    Print("\n8 ");
     for (i = 0; i < 64; ++i) {
         switch (color[i]) {
             case EMPTY:
-                printf(" .");
+                Print(" .");
                 break;
             case LIGHT:
-                printf(" %c", piece_char[piece[i]]);
+                Print(" %c", piece_char[piece[i]]);
                 break;
             case DARK:
-                printf(" %c", piece_char[piece[i]] + ('a' - 'A'));
+                Print(" %c", piece_char[piece[i]] + ('a' - 'A'));
                 break;
         }
         if ((i + 1) % 8 == 0 && i != 63)
-            printf("\n%d ", 7 - ROW(i));
+            Print("\n%d ", 7 - ROW(i));
     }
-    printf("\n\n   a b c d e f g h\n\n");
+    Print("\n\n   a b c d e f g h\n\n");
 }
 
 int get_ms()
@@ -326,25 +346,25 @@ void bench()
     for (i = 0; i < 3; ++i) {
         think(1);
         t[i] = get_ms() - start_time;
-        printf("Time: %d ms\n", t[i]);
+        Print("Time: %d ms\n", t[i]);
     }
     if (t[1] < t[0])
         t[0] = t[1];
     if (t[2] < t[0])
         t[0] = t[2];
-    printf("\n");
-    printf("Nodes: %d\n", nodes);
-    printf("Best time: %d ms\n", t[0]);
+    Print("\n");
+    Print("Nodes: %d\n", nodes);
+    Print("Best time: %d ms\n", t[0]);
     if (!ftime_ok) {
-        printf("\n");
-        printf("Your compiler's ftime() function is apparently only accurate\n");
-        printf("to the second. Please change the get_ms() function in main.c\n");
-        printf("to make it more accurate.\n");
-        printf("\n");
+        Print("\n");
+        Print("Your compiler's ftime() function is apparently only accurate\n");
+        Print("to the second. Please change the get_ms() function in main.c\n");
+        Print("to make it more accurate.\n");
+        Print("\n");
         return;
     }
     if (t[0] == 0) {
-        printf("(invalid)\n");
+        Print("(invalid)\n");
         return;
     }
     nps = (double)nodes / (double)t[0];

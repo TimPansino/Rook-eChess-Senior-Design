@@ -1,3 +1,7 @@
+#ifndef DRIVERS
+#define DRIVERS
+#include <stdarg.h>
+
 // Numeric Definitions
 #define RED     4
 #define GREEN   2
@@ -27,6 +31,27 @@
 #define COLOR_ORIGIN    WHITE
 #define COLOR_ACCEPTED  GREEN
 
+// Terminal Commands
+#define CLEAR_TERMINAL "\033[2J\033[H"
+#define NEWLINE_STR "\r\n"
+#define BACKSPACE_STR "\b\033[K"
+
+#define CARE 0x0D     // ASCII return 
+#define LF 0x0A     // ASCII new line 
+
+// LCD INSTRUCTION CHARACTERS
+#define LCDON 0x0C
+// LCD initialization command
+#define LCDCLR 0x01 // LCD clear display command
+#define TWOLINE 0x38    // LCD 2-line enable command
+#define CURMOV 0xFE // LCD cursor move instruction
+#define LINE1 0x80  // LCD line 1 cursor position
+#define LINE2 0xC0  // LCD line 2 cursor position
+#define MODE 0x06
+
+// SPI and UART TIMEOUT
+#define TIMEOUT 10000
+
 // Type Definitions
 typedef char Color;
 typedef Color C[8][8];
@@ -35,3 +60,7 @@ typedef Color C[8][8];
 void blankColors(C board);
 void updateLeds(C curBoard, C prevBoard);
 char pawnPromote(void);
+void Print(const char* format, ...);
+void Scan(char* s);
+
+#endif

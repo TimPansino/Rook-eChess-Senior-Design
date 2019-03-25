@@ -1,3 +1,5 @@
+#ifndef PIECES_H
+#define PIECES_H
 // Numeric Definitions
 #define Knight 'N'
 #define King 'K'
@@ -23,3 +25,5 @@ typedef struct Move_S {
   int destRow;
   int destCol;
 } Move;
+
+#endif

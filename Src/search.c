@@ -10,12 +10,14 @@
 #include "defs.h"
 #include "data.h"
 #include "protos.h"
-
+#include "drivers.h"
 
 /* see the beginning of think() */
 #include <setjmp.h>
 jmp_buf env;
 BOOL stop_search;
+
+// Global Variables
 
 
 /* think() calls search() iteratively. Search statistics
@@ -54,19 +56,19 @@ void think(int output)
     memset(pv, 0, sizeof(pv));
     memset(history, 0, sizeof(history));
     if (output == 1)
-        printf("ply      nodes  score  pv\n");
+        Print("ply      nodes  score  pv\n");
     for (i = 1; i <= max_depth; ++i) {
         follow_pv = TRUE;
         x = search(-10000, 10000, i);
         if (output == 1)
-            printf("%3d  %9d  %5d ", i, nodes, x);
+            Print("%3d  %9d  %5d ", i, nodes, x);
         else if (output == 2)
-            printf("%d %d %d %d",
+            Print("%d %d %d %d",
                     i, x, (get_ms() - start_time) / 10, nodes);
         if (output) {
             for (j = 0; j < pv_length[0]; ++j)
-                printf(" %s", move_str(pv[0][j].b));
-            printf("\n");
+                Print(" %s", move_str(pv[0][j].b));
+            Print("\n");
             fflush(stdout);
         }
         if (x > 9000 || x < -9000)

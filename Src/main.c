@@ -5,12 +5,17 @@
 #include "drivers.h"
 #include "chess.h"
 #include "debug.h"
+#include "ai.h"
+#include "defs.h"
+#include "data.h"
+#include "protos.h"
 
 // Function Declarations
 int testChessLibrary(void);
 int testLedDrivers(void);
 int testCastling(void);
 int testCheck(void);
+int testAI(void);
 void Print(const char* format, ...);
 void Scan(char* s);
 
@@ -21,7 +26,35 @@ int main(int argc, char** argv) {
   //testCastling();
   //ledTest();
   //testCheck();
+  //testAI();
   commandLine();
+
+  return 0;
+}
+
+int testAI(void) {
+  char s[100];
+  s[0] = '\0';
+
+  aiInit(LIGHT);
+
+  while (1) {
+    s[0] = '\0';
+    aiMakeMove(s);
+    if (strlen(s) > 0) {
+      Print("AI Move: %s\n", s);
+    }
+
+    Print(">");
+    Scan(s);
+
+    if (strcmp("exit", s) == 0) {
+      break;
+    }
+    else {
+      aiParseCommand(s);
+    }
+  }
 
   return 0;
 }

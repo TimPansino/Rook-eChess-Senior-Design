@@ -13,6 +13,7 @@
 #include "defs.h"
 #include "data.h"
 #include "protos.h"
+#include "drivers.h"
 
 
 /* the opening book file, declared here so we don't have to include stdio.h in
@@ -28,7 +29,7 @@ void open_book()
 	srand(time(NULL));
 	book_file = fopen("book.txt", "r");
 	if (!book_file)
-		printf("Opening book missing.\n");
+		Print("Opening book missing.\n");
 }
 
 
