@@ -43,10 +43,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "mfrc630.h"
-#include "mfrc630_def.h"
 #include <stdarg.h>
 #include <string.h>
+#include "mfrc630.h"
+#include "mfrc630_def.h"
+
 #include "pieces.h"
 #include "chess.h"
 #include "micro.h"
@@ -87,7 +88,7 @@ int dataReceivedFlag = 0;
 uint8_t receivedData = 0;
 int currentLocation = 0;
 
-char* hello_world = "Hello World";
+char* hello_world = "Hello World!";
 char* newlineStr = NEWLINE_STR;
 char* backSpace = BACKSPACE_STR;
 /* USER CODE END PV */
@@ -109,6 +110,7 @@ void mfrc630_MF_dump(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 /* USER CODE END 0 */
 
 /**
@@ -118,7 +120,6 @@ void mfrc630_MF_dump(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -143,18 +144,20 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  // Preset NSS
-  //mfrc630_SPI_unselect();
-  //HAL_Delay(1);
+  // Uart init message
+  Print(CLEAR_TERMINAL);
+  Print("UART Initialized.\n");
 
-  // Setup RFID Reader
+  // Initialize Pins
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
   mfrc630_SPI_unselect();
   HAL_Delay(100);
+
+  // Setup RFID Reader
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
   mfrc630_SPI_select();
   setup();
-  //mfrc630_SPI_transfer((uint8_t*) hello_world, (uint8_t*) receiveBuffer, strlen(hello_world));
+  mfrc630_flush_fifo();
   mfrc630_SPI_unselect();
   HAL_Delay(1000);
 
@@ -165,12 +168,25 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	// Perform Dump
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
 	mfrc630_SPI_select();
-	mfrc630_MF_dump();
-    //mfrc630_SPI_transfer((uint8_t*) hello_world, (uint8_t*) receiveBuffer, strlen(hello_world));
+	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
+	mfrc630_write_fifo((uint8_t *) hello_world, strlen(hello_world)+1);
+	//mfrc630_MF_dump();
+
+	//mfrc630_read_fifo((uint8_t *) receiveBuffer, 500);
+	mfrc630_read_fifo((uint8_t *) receiveBuffer, strlen(hello_world));
+	Print("Received: %s\n", receiveBuffer);
+
+	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
+	mfrc630_read_fifo((uint8_t *) receiveBuffer, 8);
+	Print("Received: %s\n", receiveBuffer);
+
   	mfrc630_SPI_unselect();
+
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+    HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -381,15 +397,15 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
-  switch(HAL_SPI_TransmitReceive(&SpiHandle, tx, rx, len, 5000)){
+  switch(HAL_SPI_TransmitReceive(&SpiHandle, tx, rx, len, TIMEOUT)){
       case HAL_OK:
-        // Communication is completed, dont do anything.
+        //Print("SPI OK\n");
         break;
-
       case HAL_TIMEOUT:
-        // VCP_printf("Timeout\n");
+        Print("Timeout\n");
+        break;
       case HAL_ERROR:
-        // VCP_printf("Some error\n");
+        Print("SPI Error (No idea, good luck)\n");
         Error_Handler();
         break;
       default:

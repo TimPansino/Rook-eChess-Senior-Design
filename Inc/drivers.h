@@ -50,7 +50,7 @@
 #define MODE 0x06
 
 // SPI and UART TIMEOUT
-#define TIMEOUT 10000
+#define TIMEOUT 1000
 
 // Type Definitions
 typedef char Color;
