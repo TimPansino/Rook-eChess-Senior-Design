@@ -52,11 +52,19 @@
 // SPI and UART TIMEOUT
 #define TIMEOUT 1000
 
+// RFID Defines
+#define UID_SIZE 10
+
 // Type Definitions
 typedef char Color;
 typedef Color C[8][8];
+typedef char UID[UID_SIZE];
+
+// UID Match Declarations
+extern UID W_PAWN_1;
 
 // Function Declarations
+int diffUID(UID uidA, UID uidB);
 void blankColors(C board);
 void updateLeds(C curBoard, C prevBoard);
 char pawnPromote(void);

@@ -105,7 +105,7 @@ char * receiveString(void);
 void transmitString(char *);
 void setup(void);
 void print_block(uint8_t * block,uint8_t length);
-void mfrc630_MF_dump(void);
+void mfrc630_MF_dump(UID uid);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -120,6 +120,7 @@ void mfrc630_MF_dump(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	UID newUID = {0};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -150,16 +151,12 @@ int main(void)
 
   // Initialize Pins
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-  mfrc630_SPI_unselect();
-  HAL_Delay(100);
+  mfrc630_SPI_select();
 
   // Setup RFID Reader
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-  mfrc630_SPI_select();
   setup();
   mfrc630_flush_fifo();
   mfrc630_SPI_unselect();
-  HAL_Delay(1000);
 
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -170,21 +167,38 @@ int main(void)
   {
 	// Perform Dump
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-	mfrc630_SPI_select();
+	/*
 	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
 	mfrc630_write_fifo((uint8_t *) hello_world, strlen(hello_world)+1);
-	//mfrc630_MF_dump();
-
-	//mfrc630_read_fifo((uint8_t *) receiveBuffer, 500);
-	mfrc630_read_fifo((uint8_t *) receiveBuffer, strlen(hello_world));
+	mfrc630_read_fifo((uint8_t *) receiveBuffer, strlen(hello_world)+1);
 	Print("Received: %s\n", receiveBuffer);
+	*/
+
+	/*
+	mfrc630_MF_dump();
+    HAL_Delay(200);
+	*/
 
 	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
-	mfrc630_read_fifo((uint8_t *) receiveBuffer, 8);
-	Print("Received: %s\n", receiveBuffer);
+	for (int i = 0; i < 100; i++) s[i] = '\0';
+	for (int i = 0; i < 16; i++) {
+		s[i] = i;
+	}
 
-  	mfrc630_SPI_unselect();
+	HAL_Delay(1000);
+	mfrc630_SPI_select();
+	mfrc630_MF_dump(newUID);
 
+	if (!diffUID(W_PAWN_1, newUID)) {
+		Print("It's a match!\n");
+	}
+	else {
+		for (int i = 0; i < UID_SIZE; i++) {
+			Print("%d\n", newUID[i]);
+		}
+	}
+
+	mfrc630_SPI_unselect();
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
     HAL_Delay(100);
     /* USER CODE END WHILE */
@@ -415,37 +429,35 @@ void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
 
 void mfrc630_SPI_select(){
   HAL_GPIO_WritePin(SPI_NSS_GPIO_PORT, SPI_NSS_PIN, GPIO_PIN_RESET);
+  //HAL_Delay(1);
 }
 
 void mfrc630_SPI_unselect(){
   HAL_GPIO_WritePin(SPI_NSS_GPIO_PORT, SPI_NSS_PIN, GPIO_PIN_SET);
+  //HAL_Delay(1);
 }
 
-void mfrc630_MF_dump() {
+void mfrc630_MF_dump(UID uid) {
   uint16_t atqa = mfrc630_iso14443a_REQA();
   if (atqa != 0) {  // Are there any cards that answered?
-    uint8_t sak;
-    uint8_t uid[10] = {0};  // uids are maximum of 10 bytes long.
+	uint8_t sak;
+	for (int i = 0; i < UID_SIZE; i++) {
+		uid[i] = 0;
+	}
 
-    // Select the card and discover its uid.
-    uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
+	// Select the card and discover its uid.
+	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
 
-    if (uid_len != 0) {  // did we get a UID?
-      Print("UID of ");
-      Print("%d", uid_len);
-      Print(" bytes (SAK: ");
-      Print("%d", sak);
-      Print("): ");
-      print_block(uid, uid_len);
-      Print("\n");
-    }
-    else {
-      Print("Could not determine UID, perhaps some cards don't play");
-      Print(" well with the other cards? Or too many collisions?\n");
-    }
-  }
-  else {
-    Print("No answer to REQA, no cards?\n");
+	if (uid_len != 0) {  // did we get an UID?
+	  Print("UID: ");
+	  print_block(uid, uid_len);
+	  Print("\n");
+	} else {
+	  Print("Could not determine UID, perhaps some cards don't play");
+	  Print(" well with the other cards? Or too many collisions?\n");
+	}
+  } else {
+	Print("No answer to REQA, no cards?\n");
   }
 }
 
@@ -469,7 +481,7 @@ void print_block(uint8_t * block,uint8_t length){
 		Print("0");
 	}
 	for (i = 0; i < length; i++) {
-		Print("%h", block[i]);
+		Print("%x", block[i] );
 	}
 }
 
@@ -545,7 +557,6 @@ void transmitString(char * s) {
 			HAL_UART_Transmit(&huart2, (uint8_t*) &s[i], 1, TIMEOUT);
 		}
 	}
-	//HAL_UART_Transmit_IT(&huart2, (uint8_t *) s, size);
 
 	return;
 }

@@ -43,7 +43,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <stdarg.h>
+#include "drivers.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,15 +64,17 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 char receiveBuffer[100];
-//char transmitBuffer[100];
-char* transmitBuffer = "Hello World!\n\r";
-char* newLineString = "\n\r";
-int firstArgument = 0;
-int secondArgument = 0;
+char transmitBuffer[100];
+char s[100];
+
+char* newlineStr = NEWLINE_STR;
+char* backSpace = BACKSPACE_STR;
+char* hello_world = "Hello World!\n";
 
 /* Used to store data received from the UART */
 uint8_t receivedData = 0;
@@ -87,9 +91,10 @@ int new_message = 0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart);
-char * receiveString(void);
+char* receiveString(void);
 void transmitString(char * transmitData);
 /* USER CODE END PFP */
 
@@ -126,8 +131,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  Print(CLEAR_TERMINAL);
+  Print("Uart Initialized.\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -135,13 +142,12 @@ int main(void)
   while (1)
   {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-	HAL_Delay(1000);
 
-	transmitString(transmitBuffer);
+	Print(">");
 	receiveString();
+	Print("Got: %s\n", receiveBuffer);
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-	HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -193,6 +199,39 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -208,7 +247,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
+  huart2.Init.BaudRate = 38400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -259,6 +298,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
 {
     /* Move data into buffer */
@@ -266,36 +306,63 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
 
     /* Variable to keep track of location in buffer */
     if (((char)receiveBuffer[currentLocation] == '\n') || ((char)receiveBuffer[currentLocation] == '\r')) {
+        HAL_UART_Transmit(&huart1, (uint8_t*) newlineStr, 2, TIMEOUT);
         dataReceivedFlag = 1;
         receiveBuffer[currentLocation] = '\0';
         currentLocation = 0;
-        HAL_UART_Transmit_IT(&huart2, (uint8_t *) newLineString, 2);
+    }
+    else if (((char)receiveBuffer[currentLocation] == 0x08) || ((char)receiveBuffer[currentLocation] == 0x7F)) {
+    	if (currentLocation > 0) {
+        	Print(backSpace);
+        	receiveBuffer[currentLocation] = '\0';
+    		currentLocation--;
+    	}
     }
     else {
+        HAL_UART_Transmit(&huart1, &receivedData, 1, TIMEOUT);
         currentLocation++;
-        HAL_UART_Transmit_IT(&huart2, &receivedData, 1);
     }
 }
 
 char * receiveString(void) {
     /* Listen for input; print back to screen when fully received */
     while (!dataReceivedFlag) {
-        HAL_UART_Receive_IT(&huart2, &receivedData, 1);
+        HAL_UART_Receive_IT(&huart1, &receivedData, 1);
     }
     dataReceivedFlag = 0;
-    new_message = 1;
     return receiveBuffer;
 }
 
-void transmitString(char * transmitData) {
-	int transmitSize = 0;
-	//int status = 0;
+void transmitString(char * s) {
+	//int size = 0;
+	int i;
 
-	while(transmitData[transmitSize] != '\0') transmitSize++;
-	HAL_UART_Transmit_IT(&huart2, (uint8_t *) transmitData, transmitSize);
-	//HAL_UART_Transmit(&huart2, (uint8_t *) transmitData, transmitSize, 100000);
-	//status = HAL_UART_Transmit(&huart2, (uint8_t *) transmitData, transmitSize);
-	//if (status != HAL_OK) while(1);
+	//while(s[size] != '\0') size++;
+	for (i = 0; s[i] != '\0'; i++) {
+		if (s[i] == '\n') {
+			HAL_UART_Transmit(&huart1, (uint8_t*) newlineStr, 2, TIMEOUT);
+		}
+		else if (s[i] != '\r' && s[i] != '\0') {
+			HAL_UART_Transmit(&huart1, (uint8_t*) &s[i], 1, TIMEOUT);
+		}
+	}
+
+	return;
+}
+
+void Print(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  vsprintf(transmitBuffer, format, args);
+  transmitString(transmitBuffer);
+  va_end(args);
+
+  return;
+}
+
+void Scan(char* s) {
+	receiveString();
+	strcpy(s, receiveBuffer);
 
 	return;
 }

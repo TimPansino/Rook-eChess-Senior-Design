@@ -26,7 +26,7 @@
 #define MFRC630_DEF_H_
 
 /*! \addtogroup register
-    
+
   @{
 */
 // Define register name                 Addr    //  comment
@@ -107,7 +107,7 @@
 //! @}
 
 /*! \addtogroup commands
-    
+
   @{
 */
 // Define  command name                 hex     //  argument ; comment
@@ -164,7 +164,7 @@
 
 
 /*! \addtogroup register
-    
+
   @{
 
     \defgroup status_reg Status
@@ -221,7 +221,7 @@
 
 
 /*! \addtogroup register
-    
+
   @{
 
   \defgroup irq0_reg Interrupt 0
@@ -390,7 +390,7 @@
   \defgroup txdatanum_reg Tx Datanum
         \brief Define to manipulate `#MFRC630_REG_TXDATANUM`.
 
-        
+
         For the `#MFRC630_REG_TXDATANUM` register, the last 3 bits of this register determine how many bits of the last
         byte in the FIFO are actually transmitted. For transmission of 7 bit or 5 bit symbols this needs to be modified.
 
@@ -408,7 +408,7 @@
 
 
 /*! \addtogroup documentation
-    
+
     The defines in @ref protocol_index are the protocol numbers and can be used as such. The
     `#MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER` is the default one for the ISO14443A select procedure.
   @{
