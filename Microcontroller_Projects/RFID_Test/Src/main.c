@@ -62,8 +62,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SPI_NSS_GPIO_PORT GPIOC
-#define SPI_NSS_PIN GPIO_PIN_0
+#define SPI_NSS_PIN GPIOC, GPIO_PIN_0
 #define SpiHandle hspi2
 
 /* USER CODE END PD */
@@ -87,6 +86,7 @@ char s[100];
 int dataReceivedFlag = 0;
 uint8_t receivedData = 0;
 int currentLocation = 0;
+int rfid_addr = 0;
 
 char* hello_world = "Hello World!";
 char* newlineStr = NEWLINE_STR;
@@ -186,17 +186,20 @@ int main(void)
 	}
 
 	HAL_Delay(1000);
+	Print(CLEAR_TERMINAL);
+	rfid_addr = 0;
 	mfrc630_SPI_select();
 	mfrc630_MF_dump(newUID);
+	Print("Real Address: ");
+	print_block(newUID, 10);
+	mfrc630_SPI_unselect();
 
-	if (!diffUID(W_PAWN_1, newUID)) {
-		Print("It's a match!\n");
-	}
-	else {
-		for (int i = 0; i < UID_SIZE; i++) {
-			Print("%d\n", newUID[i]);
-		}
-	}
+	rfid_addr = 1;
+	mfrc630_SPI_select();
+	mfrc630_MF_dump(newUID);
+	Print("Fake Address: ");
+	print_block(newUID, 10);
+	mfrc630_SPI_unselect();
 
 	mfrc630_SPI_unselect();
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
@@ -428,22 +431,30 @@ void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
 }
 
 void mfrc630_SPI_select(){
-  HAL_GPIO_WritePin(SPI_NSS_GPIO_PORT, SPI_NSS_PIN, GPIO_PIN_RESET);
-  //HAL_Delay(1);
+  switch(rfid_addr) {
+  case 0:
+      HAL_GPIO_WritePin(SPI_NSS_PIN, GPIO_PIN_RESET);
+      break;
+  default:
+	  break;
+  }
 }
 
 void mfrc630_SPI_unselect(){
-  HAL_GPIO_WritePin(SPI_NSS_GPIO_PORT, SPI_NSS_PIN, GPIO_PIN_SET);
-  //HAL_Delay(1);
+  if (rfid_addr == 0)
+  HAL_GPIO_WritePin(SPI_NSS_PIN, GPIO_PIN_SET);
 }
 
 void mfrc630_MF_dump(UID uid) {
-  uint16_t atqa = mfrc630_iso14443a_REQA();
+  uint16_t atqa;
+
+  for (int i = 0; i < UID_SIZE; i++) uid[i] = 0;
+
+  atqa = mfrc630_iso14443a_REQA();
+  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just to be sure
   if (atqa != 0) {  // Are there any cards that answered?
 	uint8_t sak;
-	for (int i = 0; i < UID_SIZE; i++) {
-		uid[i] = 0;
-	}
+
 
 	// Select the card and discover its uid.
 	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
@@ -451,7 +462,6 @@ void mfrc630_MF_dump(UID uid) {
 	if (uid_len != 0) {  // did we get an UID?
 	  Print("UID: ");
 	  print_block(uid, uid_len);
-	  Print("\n");
 	} else {
 	  Print("Could not determine UID, perhaps some cards don't play");
 	  Print(" well with the other cards? Or too many collisions?\n");
@@ -483,6 +493,7 @@ void print_block(uint8_t * block,uint8_t length){
 	for (i = 0; i < length; i++) {
 		Print("%x", block[i] );
 	}
+	Print("\n");
 }
 
 void setup(void) {
