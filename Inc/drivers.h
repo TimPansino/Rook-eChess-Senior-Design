@@ -1,6 +1,7 @@
-#ifndef DRIVERS
-#define DRIVERS
+#ifndef DRIVERS_H
+#define DRIVERS_H
 #include <stdarg.h>
+#include "pieces.h"
 
 // Numeric Definitions
 #define RED     4
@@ -62,11 +63,13 @@ typedef char UID[UID_SIZE];
 
 // UID Match Declarations
 extern UID W_PAWN_1;
+extern UID W_QUEEN;
 
 // Function Declarations
 int diffUID(UID uidA, UID uidB);
 void blankColors(C board);
 void updateLeds(C curBoard, C prevBoard);
+void updateSquare(Piece * P, UID id);
 char pawnPromote(void);
 void Print(const char* format, ...);
 void Scan(char* s);
