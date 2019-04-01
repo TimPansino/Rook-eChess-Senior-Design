@@ -23,6 +23,7 @@
 */
 
 #include "mfrc630.h"
+#include "main.h"
 
 /** @file */
 
@@ -943,32 +944,26 @@ void mfrc630_MF_scan(UID uid) {
   }
 
   // Perform Request
-  atqa = mfrc630_iso14443a_REQA();
-  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just in case
+  atqa = 0;
+  for (int i = 0; i < SCANS_NUMBER; i++) {
+	  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just in case
+	  else break;
+  }
   if (atqa != 0) {  // Are there any cards that answered?
-
 	// Select the card and discover its uid.
 	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
-
-	/*
-	if (uid_len != 0) {  // did we get a UID?
-	  Print("UID: ");
-	  print_block(uid, uid_len);
-	  Print("\n");
-	} else {
-	  Print("Could not determine UID, perhaps some cards don't play");
-	  Print(" well with the other cards? Or too many collisions?\n");
+	if (uid_len == 0) {
+		//Print("UID Collision, retrying...\n");
+		mfrc630_MF_scan(uid);
 	}
-	*/
-  }
-  else if (atqa > 1) {
-    for (int i = 0; i < UID_SIZE; i++) {
-	  uid[i] = 0xFF;
-    }
+
+	while (atqa != 0) atqa = mfrc630_iso14443a_REQA(); // Poll until empty
   }
   else {
-	//Print("No answer to REQA, no cards?\n");
+	  // No Tag
   }
+
+  return;
 }
 
 // Hex print for blocks without printf.

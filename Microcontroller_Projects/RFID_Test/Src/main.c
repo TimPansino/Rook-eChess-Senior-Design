@@ -123,7 +123,6 @@ void setup(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	UID newUID = {0};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -161,6 +160,7 @@ int main(void)
 
   // Setup Board State
   blankBoard(curBoard);
+  blankBoard(scanBoard);
 
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -169,11 +169,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	// Scan
+	//HAL_Delay(1000);
+	//Print(CLEAR_TERMINAL);
+  	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
+  	updateBoard(scanBoard);
+  	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+
 	// Output results
 	copyBoard(curBoard, scanBoard);
-	Print(CLEAR_TERMINAL);
 	printBoard(curBoard);
-    HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
@@ -248,7 +253,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -323,7 +328,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -406,12 +411,15 @@ void mfrc630_SPI_select(){
     HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
   }
 
+  HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
+  //HAL_Delay(1);
 }
 
 void mfrc630_SPI_unselect(int addr){
   if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
 	HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
   }
+  HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
 }
 
 
@@ -433,9 +441,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == htim3.Instance)
     {
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    	updateBoard(scanBoard);
-    	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
     }
 }
 

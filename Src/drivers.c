@@ -1,7 +1,7 @@
 #include "drivers.h"
 
 // UID Matches
-UID EMPTY = {0};
+UID EMPTY_UID = {0};
 UID BAD_UID = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 UID W_PAWN_1 = {0xe9, 0x9f, 0xb1, 0x63};
 UID W_QUEEN = {0xd9, 0x7b, 0x35, 0x63};
@@ -34,10 +34,19 @@ void updateSquare(Piece* P, UID id) {
 		P->side = White;
 		P->type = 'Q';
 	}
-	else {
+	else if (!diffUID(EMPTY_UID, id)) {
 		P->side = 0;
 		P->type = 0;
 	}
+  else {
+    /*
+    Print("Unknown UID: ");
+    print_block(id, 10);
+    Print("\n\n");
+    */
+    P->side = 1;
+    P->type = '?';
+  }
 }
 
 void updateBoard(B curBoard) {

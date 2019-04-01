@@ -55,6 +55,7 @@
 
 // RFID Defines
 #define UID_SIZE 10
+#define SCANS_NUMBER 6
 
 // Type Definitions
 typedef char Color;
