@@ -62,7 +62,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SPI_NSS_PIN GPIOC, GPIO_PIN_0
+#define SPI_NSS_PIN  GPIOC, GPIO_PIN_0
 #define SpiHandle hspi2
 
 /* USER CODE END PD */
@@ -86,11 +86,16 @@ char s[100];
 int dataReceivedFlag = 0;
 uint8_t receivedData = 0;
 int currentLocation = 0;
-int rfid_addr = 0;
+int rfidReaderAddress = 0;
+int rfidAntennaAddress = 0;
 
 char* hello_world = "Hello World!";
 char* newlineStr = NEWLINE_STR;
 char* backSpace = BACKSPACE_STR;
+
+// Boards
+B curBoard;
+B scanBoard;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -104,8 +109,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart);
 char * receiveString(void);
 void transmitString(char *);
 void setup(void);
-void print_block(uint8_t * block,uint8_t length);
-void mfrc630_MF_dump(UID uid);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -151,12 +154,13 @@ int main(void)
 
   // Initialize Pins
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-  mfrc630_SPI_select();
 
   // Setup RFID Reader
   setup();
-  mfrc630_flush_fifo();
-  mfrc630_SPI_unselect();
+  mfrc630_flush_fifo(0);
+
+  // Setup Board State
+  blankBoard(curBoard);
 
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -165,45 +169,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	// Perform Dump
-  	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-	/*
-	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
-	mfrc630_write_fifo((uint8_t *) hello_world, strlen(hello_world)+1);
-	mfrc630_read_fifo((uint8_t *) receiveBuffer, strlen(hello_world)+1);
-	Print("Received: %s\n", receiveBuffer);
-	*/
-
-	/*
-	mfrc630_MF_dump();
-    HAL_Delay(200);
-	*/
-
-	for (int i = 0; i < 100; i++) receiveBuffer[i] = '\0';
-	for (int i = 0; i < 100; i++) s[i] = '\0';
-	for (int i = 0; i < 16; i++) {
-		s[i] = i;
-	}
-
-	HAL_Delay(1000);
+	// Output results
+	copyBoard(curBoard, scanBoard);
 	Print(CLEAR_TERMINAL);
-	rfid_addr = 0;
-	mfrc630_SPI_select();
-	mfrc630_MF_dump(newUID);
-	Print("Real Address: ");
-	print_block(newUID, 10);
-	mfrc630_SPI_unselect();
+	printBoard(curBoard);
+    HAL_Delay(1000);
 
-	rfid_addr = 1;
-	mfrc630_SPI_select();
-	mfrc630_MF_dump(newUID);
-	Print("Fake Address: ");
-	print_block(newUID, 10);
-	mfrc630_SPI_unselect();
-
-	mfrc630_SPI_unselect();
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-    HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -431,92 +402,40 @@ void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
 }
 
 void mfrc630_SPI_select(){
-  switch(rfid_addr) {
-  case 0:
-      HAL_GPIO_WritePin(SPI_NSS_PIN, GPIO_PIN_RESET);
-      break;
-  default:
-	  break;
+  if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
+    HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
+  }
+
+}
+
+void mfrc630_SPI_unselect(int addr){
+  if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
+	HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
   }
 }
 
-void mfrc630_SPI_unselect(){
-  if (rfid_addr == 0)
-  HAL_GPIO_WritePin(SPI_NSS_PIN, GPIO_PIN_SET);
-}
-
-void mfrc630_MF_dump(UID uid) {
-  uint16_t atqa;
-
-  for (int i = 0; i < UID_SIZE; i++) uid[i] = 0;
-
-  atqa = mfrc630_iso14443a_REQA();
-  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just to be sure
-  if (atqa != 0) {  // Are there any cards that answered?
-	uint8_t sak;
-
-
-	// Select the card and discover its uid.
-	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
-
-	if (uid_len != 0) {  // did we get an UID?
-	  Print("UID: ");
-	  print_block(uid, uid_len);
-	} else {
-	  Print("Could not determine UID, perhaps some cards don't play");
-	  Print(" well with the other cards? Or too many collisions?\n");
-	}
-  } else {
-	Print("No answer to REQA, no cards?\n");
-  }
-}
-
-// Hex print for blocks without printf.
-void print_block(uint8_t * block,uint8_t length){
-	uint8_t i;
-
-	/*
-    for (i=0; i<length; i++){
-        if (block[i] < 16){
-          Print("0");
-          Print("%h", block[i]);
-        } else {
-          Print("%h", block[i]);
-        }
-        Print(" ");
-    }
-    */
-	Print("0x");
-	for (i = 0; i < (16 - length); i++) {
-		Print("0");
-	}
-	for (i = 0; i < length; i++) {
-		Print("%x", block[i] );
-	}
-	Print("\n");
-}
 
 void setup(void) {
   // Set the registers of the MFRC630 into the default.
-  mfrc630_AN1102_recommended_registers(MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER);
+  for (rfidReaderAddress = 0; rfidReaderAddress < 8; rfidReaderAddress++) {
+	  mfrc630_SPI_select();
+	  mfrc630_AN1102_recommended_registers(MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER);
 
-  // This are register required for my development platform, you probably have to change (or uncomment) them.
-  mfrc630_write_reg(0x28, 0x8E);
-  mfrc630_write_reg(0x29, 0x15);
-  mfrc630_write_reg(0x2A, 0x11);
-  mfrc630_write_reg(0x2B, 0x06);
+	  // This are register required for my development platform, you probably have to change (or uncomment) them.
+	  mfrc630_write_reg(0x28, 0x8E);
+	  mfrc630_write_reg(0x29, 0x15);
+	  mfrc630_write_reg(0x2A, 0x11);
+	  mfrc630_write_reg(0x2B, 0x06);
+  }
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == htim3.Instance)
     {
-        /* Toggle LED */
-    	/*
     	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    	ledTest();
+    	updateBoard(scanBoard);
     	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    	*/
     }
 }
 

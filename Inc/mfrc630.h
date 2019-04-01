@@ -26,6 +26,7 @@
 #define MFRC630_H_
 #include <stdint.h>
 #include "mfrc630_def.h"
+#include "drivers.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -689,7 +690,11 @@ uint8_t mfrc630_MF_write_block(uint8_t block_address, const uint8_t* source);
     \endcode
   To disable the currently enabled encryption process.
 */
-void mfrc630_MF_dump();
+
+// My declarations
+void print_block(uint8_t * block,uint8_t length);
+void mfrc630_MF_scan(UID uid);
+
 //!  @}
 
 

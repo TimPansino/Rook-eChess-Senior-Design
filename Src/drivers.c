@@ -2,6 +2,7 @@
 
 // UID Matches
 UID EMPTY = {0};
+UID BAD_UID = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 UID W_PAWN_1 = {0xe9, 0x9f, 0xb1, 0x63};
 UID W_QUEEN = {0xd9, 0x7b, 0x35, 0x63};
 
@@ -36,5 +37,18 @@ void updateSquare(Piece* P, UID id) {
 	else {
 		P->side = 0;
 		P->type = 0;
+	}
+}
+
+void updateBoard(B curBoard) {
+	UID id = {0};
+
+	for (int j = 0; j < 8; j++) {
+	  for (int i = 0; i < 8; i++) {
+		rfidReaderAddress = i;
+		rfidAntennaAddress = j;
+		mfrc630_MF_scan(id);
+		updateSquare(&curBoard[i][j], id);
+	  }
 	}
 }

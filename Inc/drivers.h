@@ -61,6 +61,10 @@ typedef char Color;
 typedef Color C[8][8];
 typedef char UID[UID_SIZE];
 
+// RFID Addresses
+extern int rfidReaderAddress;
+extern int rfidAntennaAddress;
+
 // UID Match Declarations
 extern UID W_PAWN_1;
 extern UID W_QUEEN;
@@ -70,6 +74,7 @@ int diffUID(UID uidA, UID uidB);
 void blankColors(C board);
 void updateLeds(C curBoard, C prevBoard);
 void updateSquare(Piece * P, UID id);
+void updateBoard(B curBoard);
 char pawnPromote(void);
 void Print(const char* format, ...);
 void Scan(char* s);

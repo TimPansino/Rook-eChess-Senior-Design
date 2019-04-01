@@ -931,3 +931,56 @@ void mfrc630_MF_example_dump() {
     MFRC630_PRINTF("No answer to REQA, no cards?\n");
   }
 }
+
+// My definitions
+void mfrc630_MF_scan(UID uid) {
+  uint16_t atqa;
+  uint8_t sak;
+
+  // Set UID to Zero
+  for (int i = 0; i < UID_SIZE; i++) {
+    uid[i] = 0;
+  }
+
+  // Perform Request
+  atqa = mfrc630_iso14443a_REQA();
+  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just in case
+  if (atqa != 0) {  // Are there any cards that answered?
+
+	// Select the card and discover its uid.
+	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
+
+	/*
+	if (uid_len != 0) {  // did we get a UID?
+	  Print("UID: ");
+	  print_block(uid, uid_len);
+	  Print("\n");
+	} else {
+	  Print("Could not determine UID, perhaps some cards don't play");
+	  Print(" well with the other cards? Or too many collisions?\n");
+	}
+	*/
+  }
+  else if (atqa > 1) {
+    for (int i = 0; i < UID_SIZE; i++) {
+	  uid[i] = 0xFF;
+    }
+  }
+  else {
+	//Print("No answer to REQA, no cards?\n");
+  }
+}
+
+// Hex print for blocks without printf.
+void print_block(uint8_t * block,uint8_t length){
+	uint8_t i;
+
+	Print("0x");
+	for (i = 0; i < (16 - length); i++) {
+		Print("0");
+	}
+	for (i = 0; i < length; i++) {
+		Print("%x", block[i] );
+	}
+}
+
