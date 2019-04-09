@@ -937,33 +937,23 @@ void mfrc630_MF_example_dump() {
 void mfrc630_MF_scan(UID uid) {
   uint16_t atqa;
   uint8_t sak;
+  uint8_t uid_len = 0;
 
   // Set UID to Zero
   for (int i = 0; i < UID_SIZE; i++) {
     uid[i] = 0;
   }
 
-  // Perform Request
   atqa = 0;
   for (int i = 0; i < SCANS_NUMBER; i++) {
-	  if (atqa == 0) atqa = mfrc630_iso14443a_REQA(); // Rescan just in case
-	  else break;
-  }
-  if (atqa != 0) {  // Are there any cards that answered?
-	// Select the card and discover its uid.
-	uint8_t uid_len = mfrc630_iso14443a_select(uid, &sak);
-	if (uid_len == 0) {
-		//Print("UID Collision, retrying...\n");
-		mfrc630_MF_scan(uid);
-	}
+    // Perform Request
+    atqa = mfrc630_iso14443a_REQA();
+    if (atqa == 0) continue; // Scan Again
 
-	while (atqa != 0) atqa = mfrc630_iso14443a_REQA(); // Poll until empty
+    // Check returned UID
+    uid_len = mfrc630_iso14443a_select(uid, &sak);
+    if (uid_len > 0) return; // Accept Result
   }
-  else {
-	  // No Tag
-  }
-
-  return;
 }
 
 // Hex print for blocks without printf.
@@ -978,4 +968,3 @@ void print_block(uint8_t * block,uint8_t length){
 		Print("%x", block[i] );
 	}
 }
-

@@ -170,8 +170,7 @@ int main(void)
   while (1)
   {
 	// Scan
-	//HAL_Delay(1000);
-	//Print(CLEAR_TERMINAL);
+	Print(CLEAR_TERMINAL);
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
   	updateBoard(scanBoard);
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
@@ -180,6 +179,8 @@ int main(void)
 	copyBoard(curBoard, scanBoard);
 	printBoard(curBoard);
 
+	// Delay
+	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -411,15 +412,15 @@ void mfrc630_SPI_select(){
     HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
   }
 
-  HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
-  //HAL_Delay(1);
+  //HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
 }
 
 void mfrc630_SPI_unselect(int addr){
   if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
 	HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
   }
-  HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
+
+  //HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
 }
 
 
