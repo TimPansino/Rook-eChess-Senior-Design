@@ -206,7 +206,7 @@ void updateBoard(B curBoard) {
 	UID id = {0};
 
 	for (int j = 0; j < 8; j++) {
-	  for (int i = 0; i < 8; i++) {
+	  for (int i = 0; i < 2; i++) {
 		rfidReaderAddress = i;
 		rfidAntennaAddress = j;
 		mfrc630_MF_scan(id);

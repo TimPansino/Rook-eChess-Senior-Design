@@ -939,6 +939,8 @@ void mfrc630_MF_scan(UID uid) {
   uint8_t sak;
   uint8_t uid_len = 0;
 
+  //Print("Entering MF_Scan\n");
+
   // Set UID to Zero
   for (int i = 0; i < UID_SIZE; i++) {
     uid[i] = 0;

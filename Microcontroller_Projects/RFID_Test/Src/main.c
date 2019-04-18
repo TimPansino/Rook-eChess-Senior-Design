@@ -62,7 +62,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SPI_NSS_PIN  GPIOC, GPIO_PIN_0
+#define SPI_NSS_PIN_0  GPIOC, GPIO_PIN_0
+#define SPI_NSS_PIN_1  GPIOC, GPIO_PIN_1
+#define ANT_SEL_PIN_0  GPIOA, GPIO_PIN_12
+#define ANT_SEL_PIN_1  GPIOA, GPIO_PIN_11
+#define ANT_SEL_PIN_2  GPIOB, GPIO_PIN_12
 #define SpiHandle hspi2
 
 /* USER CODE END PD */
@@ -170,7 +174,9 @@ int main(void)
   while (1)
   {
 	// Scan
-	Print(CLEAR_TERMINAL);
+	//Print(CLEAR_TERMINAL);
+
+  	Print("Scanning...\n");
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
   	updateBoard(scanBoard);
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
@@ -254,7 +260,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -362,10 +368,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI3_NSS_GPIO_Port, SPI3_NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, SPI3_NSS_0_Pin|SPI3_NSS_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(ANT_SEL_0_GPIO_Port, ANT_SEL_0_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, ANT_SEL_2_Pin|ANT_SEL_1_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -373,19 +385,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI3_NSS_Pin */
-  GPIO_InitStruct.Pin = SPI3_NSS_Pin;
+  /*Configure GPIO pins : SPI3_NSS_0_Pin SPI3_NSS_1_Pin */
+  GPIO_InitStruct.Pin = SPI3_NSS_0_Pin|SPI3_NSS_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI3_NSS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  /*Configure GPIO pins : LD2_Pin ANT_SEL_2_Pin ANT_SEL_1_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|ANT_SEL_2_Pin|ANT_SEL_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ANT_SEL_0_Pin */
+  GPIO_InitStruct.Pin = ANT_SEL_0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(ANT_SEL_0_GPIO_Port, &GPIO_InitStruct);
 
 }
 
@@ -408,33 +427,46 @@ void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
 }
 
 void mfrc630_SPI_select(){
-  if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
-    HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
+  // Unselect all pins first
+  mfrc630_SPI_unselect();
+
+  // Set reader NSS pin
+  if (rfidReaderAddress == 0) {
+	HAL_GPIO_WritePin(SPI_NSS_PIN_0, 0);
+  }
+  else if (rfidReaderAddress == 1) {
+	HAL_GPIO_WritePin(SPI_NSS_PIN_1, 0);
   }
 
-  //HAL_GPIO_WritePin(SPI_NSS_PIN, 0);
+  // Set antenna address
+  HAL_GPIO_WritePin(ANT_SEL_PIN_2, (rfidAntennaAddress >> 2) & 1);
+  HAL_GPIO_WritePin(ANT_SEL_PIN_1, (rfidAntennaAddress >> 1) & 1);
+  HAL_GPIO_WritePin(ANT_SEL_PIN_0, rfidAntennaAddress & 1);
 }
 
-void mfrc630_SPI_unselect(int addr){
-  if ((rfidReaderAddress == 0) && (rfidAntennaAddress == 0)) {
-	HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
-  }
-
-  //HAL_GPIO_WritePin(SPI_NSS_PIN, 1);
+void mfrc630_SPI_unselect(){
+	// Unselect all readers
+	HAL_GPIO_WritePin(SPI_NSS_PIN_0, 1);
+	HAL_GPIO_WritePin(SPI_NSS_PIN_1, 1);
 }
 
 
 void setup(void) {
-  // Set the registers of the MFRC630 into the default.
-  for (rfidReaderAddress = 0; rfidReaderAddress < 8; rfidReaderAddress++) {
-	  mfrc630_SPI_select();
-	  mfrc630_AN1102_recommended_registers(MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER);
+  // Antenna Address Init
+  rfidAntennaAddress = 0;
 
-	  // This are register required for my development platform, you probably have to change (or uncomment) them.
+  // Set the registers of the MFRC630 into the default.
+  //for (rfidReaderAddress = 0; rfidReaderAddress < 8; rfidReaderAddress++) {
+  for (rfidReaderAddress = 0; rfidReaderAddress < 2; rfidReaderAddress++) {
+	  mfrc630_SPI_select();
+
+	  mfrc630_AN1102_recommended_registers(MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER);
 	  mfrc630_write_reg(0x28, 0x8E);
 	  mfrc630_write_reg(0x29, 0x15);
 	  mfrc630_write_reg(0x2A, 0x11);
 	  mfrc630_write_reg(0x2B, 0x06);
+
+	  mfrc630_SPI_unselect();
   }
 }
 

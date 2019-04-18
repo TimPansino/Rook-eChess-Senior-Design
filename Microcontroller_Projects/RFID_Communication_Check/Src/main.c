@@ -45,10 +45,13 @@
 /* USER CODE BEGIN Includes */
 #include <stdarg.h>
 #include <string.h>
+#include "mfrc630.h"
+#include "mfrc630_def.h"
 
 #include "pieces.h"
 #include "chess.h"
 #include "micro.h"
+#include "debug.h"
 
 /* USER CODE END Includes */
 
@@ -59,18 +62,12 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define		LED_ADDRESS_0	GPIOA, GPIO_PIN_0
-#define		LED_ADDRESS_1	GPIOA, GPIO_PIN_1
-#define		LED_ADDRESS_2	GPIOA, GPIO_PIN_4
-#define		LED_ADDRESS_3	GPIOB, GPIO_PIN_0
-#define		LED_ADDRESS_4	GPIOC, GPIO_PIN_1
-#define		LED_ADDRESS_5	GPIOC, GPIO_PIN_0
-#define		LED_BLUE		GPIOA, GPIO_PIN_8
-#define		LED_GREEN		GPIOB, GPIO_PIN_10
-#define		LED_RED			GPIOB, GPIO_PIN_4
-#define		LED_ENABLE		GPIOB, GPIO_PIN_5
-
-#define 	TEST_DELAY		200
+#define SPI_NSS_PIN_0  GPIOC, GPIO_PIN_0
+#define SPI_NSS_PIN_1  GPIOC, GPIO_PIN_1
+#define ANT_SEL_PIN_0  GPIOA, GPIO_PIN_12
+#define ANT_SEL_PIN_1  GPIOA, GPIO_PIN_11
+#define ANT_SEL_PIN_2  GPIOB, GPIO_PIN_12
+#define SpiHandle hspi2
 
 /* USER CODE END PD */
 
@@ -80,6 +77,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi2;
+
 TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
@@ -108,11 +107,12 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart);
 char * receiveString(void);
 void transmitString(char *);
-void updateLED(int ledAddress, char color);
+void setup(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -149,6 +149,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   // Uart init message
   Print(CLEAR_TERMINAL);
@@ -157,14 +158,13 @@ int main(void)
   // Initialize Pins
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
 
+  // Setup RFID Reader
+  setup();
+  mfrc630_flush_fifo(0);
+
   // Setup Board State
   blankBoard(curBoard);
   blankBoard(scanBoard);
-
-  // Set LEDs blank
-  for (int i = 0; i < 64; i++) {
-	  updateLED(i, 0);
-  }
 
   HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
@@ -176,39 +176,17 @@ int main(void)
 	// Scan
 	//Print(CLEAR_TERMINAL);
 
-  	Print("Testing...\n");
+  	Print("Scanning...\n");
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-    for (int i = 0; i < 16; i++) {
-
-	  updateLED(i, 1);
-	  HAL_Delay(TEST_DELAY);
-	  updateLED(i, 2);
-	  HAL_Delay(TEST_DELAY);
-	  updateLED(i, 4);
-	  HAL_Delay(TEST_DELAY);
-	  updateLED(i, 0);
-	  HAL_Delay(TEST_DELAY);
-
-    	/*
-  	  updateLED(i, 7);
-  	  HAL_Delay(TEST_DELAY);
-	  updateLED(i, 0);
-	  HAL_Delay(TEST_DELAY);
-	  */
-
-    	/*
-      updateLED(i, 1);
-      updateLED((i+1) % 16, 2);
-      updateLED((i+2) % 16, 4);
-      updateLED((i+3) % 16, 0);
-      HAL_Delay(TEST_DELAY);
-      */
-    }
+  	updateBoard(scanBoard);
   	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-	HAL_Delay(1000);
 
+	// Output results
+	copyBoard(curBoard, scanBoard);
+	printBoard(curBoard);
 
 	// Delay
+	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -257,6 +235,44 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
 }
 
 /**
@@ -352,18 +368,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, SPI3_NSS_0_Pin|SPI3_NSS_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SPI3_NSS_GPIO_Port, SPI3_NSS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_8|GPIO_PIN_10|ANT_SEL_2_Pin 
-                          |ANT_SEL_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(ANT_SEL_0_GPIO_Port, ANT_SEL_0_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_10|ANT_SEL_0_Pin|GPIO_PIN_4 
-                          |GPIO_PIN_5, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, ANT_SEL_2_Pin|ANT_SEL_1_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -371,34 +385,89 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SPI3_NSS_0_Pin SPI3_NSS_1_Pin */
-  GPIO_InitStruct.Pin = SPI3_NSS_0_Pin|SPI3_NSS_1_Pin;
+  /*Configure GPIO pin : SPI3_NSS_Pin */
+  GPIO_InitStruct.Pin = SPI3_NSS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(SPI3_NSS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA0 PA1 PA4 LD2_Pin 
-                           PA8 PA10 ANT_SEL_2_Pin ANT_SEL_1_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|LD2_Pin 
-                          |GPIO_PIN_8|GPIO_PIN_10|ANT_SEL_2_Pin|ANT_SEL_1_Pin;
+  /*Configure GPIO pins : LD2_Pin ANT_SEL_2_Pin ANT_SEL_1_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|ANT_SEL_2_Pin|ANT_SEL_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB0 PB10 ANT_SEL_0_Pin PB4 
-                           PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_10|ANT_SEL_0_Pin|GPIO_PIN_4 
-                          |GPIO_PIN_5;
+  /*Configure GPIO pin : ANT_SEL_0_Pin */
+  GPIO_InitStruct.Pin = ANT_SEL_0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(ANT_SEL_0_GPIO_Port, &GPIO_InitStruct);
 
 }
 
 /* USER CODE BEGIN 4 */
+void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
+  switch(HAL_SPI_TransmitReceive(&SpiHandle, tx, rx, len, TIMEOUT)){
+      case HAL_OK:
+        //Print("SPI OK\n");
+        break;
+      case HAL_TIMEOUT:
+        Print("Timeout\n");
+        break;
+      case HAL_ERROR:
+        Print("SPI Error (No idea, good luck)\n");
+        Error_Handler();
+        break;
+      default:
+        break;
+  }
+}
+
+void mfrc630_SPI_select(){
+  // Write Antenna Address
+  HAL_GPIO_WritePin(ANT_SEL_PIN_2, (rfidAntennaAddress >> 2) & 1);
+  HAL_GPIO_WritePin(ANT_SEL_PIN_1, (rfidAntennaAddress >> 1) & 1);
+  HAL_GPIO_WritePin(ANT_SEL_PIN_0, rfidAntennaAddress & 1);
+
+  // Enable Single Reader
+  if (rfidReaderAddress == 0) {
+	HAL_GPIO_WritePin(SPI_NSS_PIN_0, 0);
+  }
+  else if (rfidReaderAddress == 1) {
+	HAL_GPIO_WritePin(SPI_NSS_PIN_1, 0);
+  }
+
+}
+
+void mfrc630_SPI_unselect(){
+	// Disable All Readers
+	HAL_GPIO_WritePin(SPI_NSS_PIN_0, 1);
+	HAL_GPIO_WritePin(SPI_NSS_PIN_1, 1);
+}
+
+
+void setup(void) {
+  // Antenna Address Init
+  rfidAntennaAddress = 0;
+
+  //for (rfidReaderAddress = 0; rfidReaderAddress < 8; rfidReaderAddress++) {
+  // Set the registers of the MFRC630 into the default.
+  for (rfidReaderAddress = 0; rfidReaderAddress < 2; rfidReaderAddress++) {
+	  mfrc630_SPI_select();
+
+	  mfrc630_AN1102_recommended_registers(MFRC630_PROTO_ISO14443A_106_MILLER_MANCHESTER);
+	  mfrc630_write_reg(0x28, 0x8E);
+	  mfrc630_write_reg(0x29, 0x15);
+	  mfrc630_write_reg(0x2A, 0x11);
+	  mfrc630_write_reg(0x2B, 0x06);
+
+	  mfrc630_SPI_unselect();
+  }
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == htim3.Instance)
@@ -474,32 +543,6 @@ void Scan(char* s) {
 	strcpy(s, receiveBuffer);
 
 	return;
-}
-
-void updateLED(int ledAddress, char color) {
-	color = ~color;
-
-	// Disable first
-	HAL_GPIO_WritePin(LED_ENABLE, 0);
-
-	// Set color
-	HAL_GPIO_WritePin(LED_RED, color & 1);
-	HAL_GPIO_WritePin(LED_BLUE, (color >> 1) & 1);
-	HAL_GPIO_WritePin(LED_GREEN, (color >> 2) & 1);
-
-	// Set address
-	HAL_GPIO_WritePin(LED_ADDRESS_0, ledAddress & 1);
-	HAL_GPIO_WritePin(LED_ADDRESS_1, (ledAddress >> 1) & 1);
-	HAL_GPIO_WritePin(LED_ADDRESS_2, (ledAddress >> 2) & 1);
-	HAL_GPIO_WritePin(LED_ADDRESS_3, ((ledAddress >> 3) & 1) ^ 1);
-	//HAL_GPIO_WritePin(LED_ADDRESS_3, (ledAddress >> 3) & 1);
-	HAL_GPIO_WritePin(LED_ADDRESS_4, (ledAddress >> 4) & 1);
-	HAL_GPIO_WritePin(LED_ADDRESS_5, (ledAddress >> 5) & 1);
-
-	// Clock in
-	HAL_GPIO_WritePin(LED_ENABLE, 1);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(LED_ENABLE, 0);
 }
 /* USER CODE END 4 */
 

@@ -41,17 +41,16 @@
 #define LF 0x0A     // ASCII new line 
 
 // LCD INSTRUCTION CHARACTERS
-#define LCDON 0x0C
-// LCD initialization command
-#define LCDCLR 0x01 // LCD clear display command
+#define LCDON 0x0C  	// LCD initialization command
+#define LCDCLR 0x01 	// LCD clear display command
 #define TWOLINE 0x38    // LCD 2-line enable command
-#define CURMOV 0xFE // LCD cursor move instruction
-#define LINE1 0x80  // LCD line 1 cursor position
-#define LINE2 0xC0  // LCD line 2 cursor position
+#define CURMOV 0xFE 	// LCD cursor move instruction
+#define LINE1 0x80  	// LCD line 1 cursor position
+#define LINE2 0xC0  	// LCD line 2 cursor position
 #define MODE 0x06
 
 // SPI and UART TIMEOUT
-#define TIMEOUT 1000
+#define TIMEOUT 100
 
 // RFID Defines
 #define UID_SIZE 10
