@@ -203,37 +203,6 @@ void printTurn(int side) {
   }
 }
 
-char pawnPromote(void) {
-  char c = 1;
-  while (1) {
-    if (c == 0) {
-      Print("Error: Can only promote to Q, B, R, or N.\n");
-    }
-    Print("Promote Pawn: ");
-    scanf(" %c", &c);
-
-    switch(c) {
-      case 'q':
-      case 'r':
-      case 'b':
-      case 'n':
-        return c + ('A' - 'a'); // Converts to uppercase
-        break;
-
-      case 'Q':
-      case 'R':
-      case 'B':
-      case 'N':
-        return c;
-        break;
-
-      default:
-        c = 0;
-        break;
-    }
-  }
-}
-
 void updateLeds(C curBoard, C prevBoard) {
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {

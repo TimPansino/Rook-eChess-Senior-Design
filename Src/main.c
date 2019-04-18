@@ -1,11 +1,16 @@
+// Defines
+#define LOCAL_ONLY 1
+
 // Includes
 #include <stdio.h>
 #include <string.h>
+
 #include "pieces.h"
 #include "drivers.h"
 #include "chess.h"
 #include "debug.h"
 #include "ai.h"
+#include "ui.h"
 #include "defs.h"
 #include "data.h"
 #include "protos.h"
@@ -16,20 +21,23 @@ int testLedDrivers(void);
 int testCastling(void);
 int testCheck(void);
 int testAI(void);
+void testUI(void);
 void Print(const char* format, ...);
 void Scan(char* s);
 
+
 // Function Definitions
 int main(int argc, char** argv) {
-  //testLedDrivers();
-  //testChessLibrary();
-  //testCastling();
-  //ledTest();
-  //testCheck();
-  //testAI();
-  commandLine();
+  Print("Testing UI...\n");
+  testUI();
 
   return 0;
+}
+
+void testUI(void) {
+  Print("%c", pawnPromote());
+
+  return;
 }
 
 int testAI(void) {

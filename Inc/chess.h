@@ -6,6 +6,7 @@
 int commandLine(void);
 void initPiece(Piece* p, char type, char side, char promotion);
 void blankBoard(B board);
+void blankColors(C board);
 void defaultBoard(B board);
 void blankMoves(M board);
 void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion);

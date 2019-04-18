@@ -1049,6 +1049,14 @@ void copyBoard(B newBoard, B oldBoard) {
   return;
 }
 
+void blankColors(C board) {
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      board[i][j] = OFF;
+    }
+  }
+}
+
 int charToCoord(char c) {
   if (c >= 'A' && c <= 'H') {
     return c - 'A';

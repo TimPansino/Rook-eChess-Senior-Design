@@ -37,14 +37,6 @@ UID BLACK_PAWN_7 = {0x56, 0x28, 0x31, 0x42};
 UID BLACK_PAWN_8 = {0xB6, 0x27, 0x31, 0x42};
 
 // Function Definitions
-void blankColors(C board) {
-  for (int j = 0; j < 8; j++) {
-    for (int i = 0; i < 8; i++) {
-      board[i][j] = OFF;
-    }
-  }
-}
-
 int diffUID(UID uidA, UID uidB) {
 	for (int i = 0; i < UID_SIZE; i++) {
 		if (uidA[i] != uidB[i]) {

@@ -103,7 +103,6 @@ extern UID BLACK_PAWN_8;
 
 // Function Declarations
 int diffUID(UID uidA, UID uidB);
-void blankColors(C board);
 void updateLeds(C curBoard, C prevBoard);
 void updateSquare(Piece * P, UID id);
 void updateBoard(B curBoard);
