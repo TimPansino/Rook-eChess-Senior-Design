@@ -146,28 +146,28 @@ void printColors(C board) {
     Print("%d:", j + PRINT_TYPE);
     for (int i = 0; i < 8; i++) {
       switch(board[i][j]) {
-        case RED:
+        case COLOR_RED:
           Print(TRED " R " TRESET);
           break;
-        case GREEN:
+        case COLOR_GREEN:
           Print(TGRN " G " TRESET);
           break;
-        case BLUE:
+        case COLOR_BLUE:
           Print(TBLU " B " TRESET);
           break;
-        case YELLOW:
+        case COLOR_YELLOW:
           Print(TYEL " Y " TRESET);
           break;
-        case MAGENTA:
+        case COLOR_MAGENTA:
           Print(TMAG " M " TRESET);
           break;
-        case CYAN:
+        case COLOR_CYAN:
           Print(TCYN " C " TRESET);
           break;
-        case WHITE:
+        case COLOR_WHITE:
           Print(" W ");
           break;
-        case OFF:
+        case COLOR_OFF:
           Print(" - ");
           break;
         default:
@@ -182,9 +182,9 @@ void printColors(C board) {
 }
 
 void printColor(C c, int x, int y) {
-  char red = (c[y][x] & RED) >> R_SHIFT;
-  char green = (c[y][x] & GREEN) >> G_SHIFT;
-  char blue = (c[y][x] & BLUE) >> B_SHIFT;
+  char red = (c[y][x] & COLOR_RED) >> R_SHIFT;
+  char green = (c[y][x] & COLOR_GREEN) >> G_SHIFT;
+  char blue = (c[y][x] & COLOR_BLUE) >> B_SHIFT;
 
   Print("Address (%d, %d): %d%d%d\n", x, y, red, green, blue);
 }
@@ -200,6 +200,37 @@ void printTurn(int side) {
     default:
       Print("Current Turn: INVALID\n");
       break;
+  }
+}
+
+char pawnPromote(void) {
+  char c = 1;
+  while (1) {
+    if (c == 0) {
+      Print("Error: Can only promote to Q, B, R, or N.\n");
+    }
+    Print("Promote Pawn: ");
+    scanf(" %c", &c);
+
+    switch(c) {
+      case 'q':
+      case 'r':
+      case 'b':
+      case 'n':
+        return c + ('A' - 'a'); // Converts to uppercase
+        break;
+
+      case 'Q':
+      case 'R':
+      case 'B':
+      case 'N':
+        return c;
+        break;
+
+      default:
+        c = 0;
+        break;
+    }
   }
 }
 

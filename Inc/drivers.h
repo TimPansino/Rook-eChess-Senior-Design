@@ -4,33 +4,33 @@
 #include "pieces.h"
 
 // Numeric Definitions
-#define RED     4
-#define GREEN   2
-#define BLUE    1
-#define MAGENTA RED|BLUE
-#define CYAN    GREEN|BLUE
-#define YELLOW  RED|GREEN
-#define WHITE   RED|GREEN|BLUE
-#define BLACK   0
-#define OFF     BLACK
+#define COLOR_RED     1
+#define COLOR_GREEN   2
+#define COLOR_BLUE    4
+#define COLOR_MAGENTA COLOR_RED | COLOR_BLUE
+#define COLOR_CYAN    COLOR_GREEN | COLOR_BLUE
+#define COLOR_YELLOW  COLOR_RED | COLOR_GREEN
+#define COLOR_WHITE   COLOR_RED | COLOR_GREEN | COLOR_BLUE
+#define COLOR_BLACK   0
+#define COLOR_OFF     COLOR_BLACK
 
 // Aliases
-#define PURPLE  MAGENTA
-#define GOLD    YELLOW
-#define ON      WHITE
+#define COLOR_PURPLE  COLOR_MAGENTA
+#define COLOR_GOLD    COLOR_YELLOW
+#define COLOR_ON      COLOR_WHITE
 
 // Shifting Amounts
-#define R_SHIFT RED/2
-#define G_SHIFT GREEN/2
-#define B_SHIFT BLUE/2
+#define R_SHIFT COLOR_RED / 2
+#define G_SHIFT COLOR_GREEN / 2
+#define B_SHIFT COLOR_BLUE / 2
 
 // Color Choices
-#define COLOR_ERROR     RED
-#define COLOR_POSSIBLE  BLUE
-#define COLOR_CAPTURE   GREEN
-#define COLOR_SPECIAL   PURPLE
-#define COLOR_ORIGIN    WHITE
-#define COLOR_ACCEPTED  GREEN
+#define COLOR_ERROR     COLOR_RED
+#define COLOR_POSSIBLE  COLOR_BLUE
+#define COLOR_CAPTURE   COLOR_GREEN
+#define COLOR_SPECIAL   COLOR_PURPLE
+#define COLOR_ORIGIN    COLOR_WHITE
+#define COLOR_ACCEPTED  COLOR_GREEN
 
 // Terminal Commands
 #define CLEAR_TERMINAL "\033[2J\033[H"
@@ -41,7 +41,8 @@
 #define LF 0x0A     // ASCII new line 
 
 // LCD INSTRUCTION CHARACTERS
-#define LCDON 0x0C  	// LCD initialization command
+//#define LCDON 0x0C  	// LCD initialization command
+#define LCDON 0x0E  	// LCD initialization command
 #define LCDCLR 0x01 	// LCD clear display command
 #define TWOLINE 0x38    // LCD 2-line enable command
 #define CURMOV 0xFE 	// LCD cursor move instruction
@@ -50,7 +51,7 @@
 #define MODE 0x06
 
 // SPI and UART TIMEOUT
-#define TIMEOUT 100
+#define TIMEOUT 10
 
 // RFID Defines
 #define UID_SIZE 10
@@ -103,11 +104,14 @@ extern UID BLACK_PAWN_8;
 
 // Function Declarations
 int diffUID(UID uidA, UID uidB);
-void updateLeds(C curBoard, C prevBoard);
+void blankColors(C board);
+void updateColors(C color);
+void updateLED(int ledAddress, char color);
 void updateSquare(Piece * P, UID id);
 void updateBoard(B curBoard);
 void printUIDArray(UID id, int size);
 char pawnPromote(void);
+
 void Print(const char* format, ...);
 void Scan(char* s);
 

@@ -1,4 +1,5 @@
 #include "drivers.h"
+#include "mfrc630.h"
 
 // UID Matches
 UID BAD_UID = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -36,7 +37,19 @@ UID BLACK_PAWN_6 = {0x26, 0x14, 0x2F, 0x42};
 UID BLACK_PAWN_7 = {0x56, 0x28, 0x31, 0x42};
 UID BLACK_PAWN_8 = {0xB6, 0x27, 0x31, 0x42};
 
+// Address Translation Tables
+int LEDTranslationTable[8][8] = {{0, 1, 2, 3, 44, 40, 36, 32}, {4, 5, 6, 7, 45, 41, 37, 33}, {8, 9, 10, 11, 46, 42, 38, 34}, {12, 13, 14, 15, 47, 43, 39, 35}, {19, 23, 27, 31, 63, 62, 61, 60}, {18, 22, 26, 30, 59, 58, 57, 56}, {17, 21, 25, 29, 55, 54, 53, 52}, {16, 20, 24, 28, 51, 50, 49, 48}};
+int RFIDTranslationTable[8][8] = {{41, 49, 54, 53, 14, 22, 9, 10}, {40, 48, 62, 61, 15, 23, 1, 2}, {43, 51, 38, 37, 12, 20, 25, 26}, {42, 50, 46, 45, 13, 21, 17, 18}, {33, 57, 55, 52, 6, 30, 8, 11}, {32, 56, 63, 60, 7, 31, 0, 3}, {35, 59, 39, 36, 4, 28, 24, 27}, {34, 58, 47, 44, 5, 29, 16, 19}};
+
 // Function Definitions
+void blankColors(C board) {
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      board[i][j] = COLOR_OFF;
+    }
+  }
+}
+
 int diffUID(UID uidA, UID uidB) {
 	for (int i = 0; i < UID_SIZE; i++) {
 		if (uidA[i] != uidB[i]) {
@@ -196,15 +209,38 @@ void updateSquare(Piece* P, UID id) {
 
 void updateBoard(B curBoard) {
 	UID id = {0};
+  int addr;
+  int a, b;
 
-	for (int j = 0; j < 8; j++) {
-	  for (int i = 0; i < 2; i++) {
-		rfidReaderAddress = i;
-		rfidAntennaAddress = j;
-		mfrc630_MF_scan(id);
-		updateSquare(&curBoard[i][j], id);
+	for (int j = 0; j < 8; j++) { // Antennas
+	  for (int i = 0; i < 8; i++) { // Readers
+  		rfidReaderAddress = i;
+  		rfidAntennaAddress = j;
+  		mfrc630_MF_scan(id);
+
+		addr = RFIDTranslationTable[j][i];
+		a = addr >> 3;
+		b = addr & 7;
+  		updateSquare(&curBoard[b][a], id);
+
+  		if (diffUID(EMPTY_UID, id)) {
+  			Print("%c%d: %d\n", 'A' + i, 8 - j, addr);
+  		}
 	  }
 	}
+
+	return;
+}
+
+void updateColors(C color) {
+  int addr;
+
+  for (int j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++) {
+      addr = LEDTranslationTable[j][i];
+      updateLED(addr, color[i][j]);
+    }
+  }
 }
 
 void printUIDArray(UID id, int size) {

@@ -112,7 +112,6 @@ static void MX_TIM3_Init(void);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart);
 char * receiveString(void);
 void transmitString(char *);
-void updateLED(int ledAddress, char color);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
