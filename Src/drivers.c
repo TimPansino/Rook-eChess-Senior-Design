@@ -42,14 +42,6 @@ int LEDTranslationTable[8][8] = {{0, 1, 2, 3, 44, 40, 36, 32}, {4, 5, 6, 7, 45, 
 int RFIDTranslationTable[8][8] = {{41, 49, 54, 53, 14, 22, 9, 10}, {40, 48, 62, 61, 15, 23, 1, 2}, {43, 51, 38, 37, 12, 20, 25, 26}, {42, 50, 46, 45, 13, 21, 17, 18}, {33, 57, 55, 52, 6, 30, 8, 11}, {32, 56, 63, 60, 7, 31, 0, 3}, {35, 59, 39, 36, 4, 28, 24, 27}, {34, 58, 47, 44, 5, 29, 16, 19}};
 
 // Function Definitions
-void blankColors(C board) {
-  for (int j = 0; j < 8; j++) {
-    for (int i = 0; i < 8; i++) {
-      board[i][j] = COLOR_OFF;
-    }
-  }
-}
-
 int diffUID(UID uidA, UID uidB) {
 	for (int i = 0; i < UID_SIZE; i++) {
 		if (uidA[i] != uidB[i]) {
