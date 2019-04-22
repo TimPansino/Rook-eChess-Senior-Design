@@ -191,7 +191,7 @@ int commandLine(void) {
         Print("Error: Move could not be parsed.\n");
       }
       else {
-        movePiece(curBoard, y, x, yy, xx, 0);
+        movePiece(curBoard, y, x, yy, xx);
         check = 1;
       }
     }
@@ -321,12 +321,12 @@ void initPiece(Piece* p, char type, char side, char promotion) {
   p->unmoved = 1;
 }
 
-void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion) {
+void movePiece(B board, int row1, int col1, int row2, int col2) {
   if ((row1 == row2) && (col1 == col2)) {
     return;
   }
 
-  // Enpassante
+  // En passante
   if ((board[col2][row2].type == 'G') && (board[col1][row1].type == 'P')) {
     board[col2][row1].side = 0;
   }
@@ -346,11 +346,11 @@ void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromot
   if (board[col2][row2].type == 'K') {
     switch (col2-col1) {
       case 2:
-        movePiece(board, row1, 7, row2, col2-1, 1);
+        movePiece(board, row1, 7, row2, col2-1);
         break;
 
       case -2:
-        movePiece(board, row1, 0, row2, col2+1, 1);
+        movePiece(board, row1, 0, row2, col2+1);
         break;
 
       default:
@@ -383,17 +383,12 @@ void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromot
     }
   }
 
-  if ((!ignorePromotion) && ((row2 == 0) || (row2 == 7))) {
-    if ((board[col2][row2].type == 'P') && (board[col2][row2].promotion == 0)) {
-      board[col2][row2].promotion = pawnPromote();
-    }
-  }
 
   return;
 }
 
 inline void makeMove(B board, Move m) {
-  movePiece(board, m.sourceRow, m.sourceCol, m.destRow, m.destCol, 1);
+  movePiece(board, m.sourceRow, m.sourceCol, m.destRow, m.destCol);
 }
 
 int possibleMoves(B board, M moves, int row, int col) {
@@ -421,7 +416,7 @@ int possibleMoves(B board, M moves, int row, int col) {
     return 0;
   }
 
-  moves[col][row] = -1;
+  moves[col][row] = 10;
 
   switch(type) {
     case 'P':
@@ -556,7 +551,7 @@ int possibleMoves(B board, M moves, int row, int col) {
       }
 
       // Allow Queen to waterfall through to Rook.
-      if (p->type != 'Q') {
+      if (type != 'Q') {
         break;
       }
 
@@ -792,7 +787,7 @@ int validMoves(B board, M moves, int row, int col) {
     for (int i = 0; i < 8; i++) {
       if (moves[j][i] > 0) {
         copyBoard(newBoard, board);
-        movePiece(newBoard, row, col, i, j, 1);
+        movePiece(newBoard, row, col, i, j);
         if (checkStatus(newBoard, side)) {
           moves[j][i] = 0;
         }
@@ -928,7 +923,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
       for (int j = 0; j < 8; j++) {
         for (int i = 0; i < 8; i++) {
           switch (moves[i][j]) {
-            case -1:
+            case 10:
               colors[i][j] = COLOR_ORIGIN;
               break;
 
@@ -969,7 +964,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move) {
         state = -1;
       }
       else {
-        movePiece(tempBoard, move->sourceRow, move->sourceCol, move->destRow, move->destCol, 1);
+        movePiece(tempBoard, move->sourceRow, move->sourceCol, move->destRow, move->destCol);
 
         if (diffBoards(tempBoard, newBoard, dummyDiff) != 0) {
           state = -1;
@@ -1015,13 +1010,38 @@ void initMove(Move* move) {
 
 int diffBoards(B newBoard, B oldBoard, M diff) {
   int ret = 0;
+  char newtype = 0;
+  char oldtype = 0;
 
   for (int j = 0; j < 8; j++) {
     for (int i = 0; i < 8; i++) {
       if ((newBoard[i][j].side != 0) || (oldBoard[i][j].side != 0)) {
-        if ((newBoard[i][j].type != oldBoard[i][j].type) || (newBoard[i][j].side != oldBoard[i][j].side)) {
-          diff[i][j] = 1;
-          ret += 1;
+    	// New Type
+    	if ((newBoard[i][j].type == 'P') && (newBoard[i][j].promotion != 0)) {
+    		newtype = newBoard[i][j].promotion;
+    		Print("USING PROMO: %c\n", newtype);
+    	}
+    	else {
+    		newtype = newBoard[i][j].type;
+    	}
+
+    	// Old Type
+    	if ((oldBoard[i][j].type == 'P') && (oldBoard[i][j].promotion != 0)) {
+    		oldtype = oldBoard[i][j].promotion;
+    		Print("USING PROMO: %c\n", oldtype);
+    	}
+    	else {
+    		oldtype = oldBoard[i][j].type;
+    	}
+
+    	// Diff Types
+    	if (newBoard[i][j].side != oldBoard[i][j].side) {
+		  diff[i][j] = 1;
+		  ret += 1;
+    	}
+    	else if ((newBoard[i][j].type != oldBoard[i][j].type) && (newBoard[i][j].type != oldtype) && (newBoard[i][j].type != oldtype) && (newtype != oldtype)) {
+            diff[i][j] = 1;
+            ret += 1;
         }
         else {
           diff[i][j] = 0;
@@ -1098,13 +1118,42 @@ char strToMove(char* s, Move* move) {
   return s[4];
 }
 
+char switchSide(char curSide) {
+	switch (curSide) {
+		case White:
+			curSide = Black;
+			break;
+		case Black:
+			curSide = White;
+			break;
+	}
+
+	return curSide;
+}
+
+char verifyMove(B curBoard, Move* move) {
+	M moves;
+
+	if ((move->destCol == -1) || (move->sourceCol == -1)) {
+		return 0;
+	}
+
+	validMoves(curBoard, moves, move->sourceRow, move->sourceCol);
+	printMoves(curBoard, moves);
+	Print("Move Value: %d\n", moves[move->destCol][move->destRow]);
+	if (moves[move->destCol][move->destRow]) {
+		return 1;
+	}
+
+	return 0;
+}
+
 void moveToStr(Move* move, char *s, int promote) {
   s[5] = '\0';
   s[0] = move->sourceCol + 'a';
   s[1] = move->sourceRow + '1';
   s[2] = move->destCol + 'a';
   s[3] = move->destRow + '1';
-
-  // Promotion Here
-  s[4] = '\0';
+  s[4] = promote;
+  if ((s[4] >= 'A') && (s[4] <= 'Z')) s[4] -= 'A' - 'a';
 }

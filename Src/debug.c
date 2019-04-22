@@ -203,6 +203,7 @@ void printTurn(int side) {
   }
 }
 
+/*
 char pawnPromote(void) {
   char c = 1;
   while (1) {
@@ -233,6 +234,7 @@ char pawnPromote(void) {
     }
   }
 }
+*/
 
 void updateLeds(C curBoard, C prevBoard) {
   for (int j = 0; j < 8; j++) {

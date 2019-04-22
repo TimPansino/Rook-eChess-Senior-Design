@@ -21,7 +21,7 @@ void ledTest(void) {
   copyBoard(curBoard, prevBoard);
 
   // Move Queen Out
-  movePiece(curBoard, 0, 3, 3, 3, 1);
+  movePiece(curBoard, 0, 3, 3, 3);
 
   // Test Board State
   state = parseState(curBoard, prevBoard, White, colors, &move);

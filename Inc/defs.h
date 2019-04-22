@@ -13,7 +13,8 @@
 #define FALSE           0
 
 #define GEN_STACK       1120
-#define MAX_PLY         32
+//#define MAX_PLY         32
+#define MAX_PLY         128
 #define HIST_STACK      400
 
 #define LIGHT           0

@@ -9,7 +9,7 @@ void blankBoard(B board);
 void blankColors(C board);
 void defaultBoard(B board);
 void blankMoves(M board);
-void movePiece(B board, int row1, int col1, int row2, int col2, int ignorePromotion);
+void movePiece(B board, int row1, int col1, int row2, int col2);
 void makeMove(B board, Move m);
 int checkStatus(B board, char side);
 int possibleMoves(B board, M moves, int row, int col);
@@ -24,5 +24,7 @@ int parseState(B newBoard, B oldBoard, int side, C colors, Move* move);
 int charToCoord(char c);
 char strToMove(char* s, Move* move);
 void moveToStr(Move* move, char *s, int promote);
+char switchSide(char curSide);
+char verifyMove(B curBoard, Move* move);
 
 #endif

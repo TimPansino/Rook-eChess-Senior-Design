@@ -13,6 +13,7 @@
 #define COLOR_WHITE   COLOR_RED | COLOR_GREEN | COLOR_BLUE
 #define COLOR_BLACK   0
 #define COLOR_OFF     COLOR_BLACK
+#define COLOR_BLANK   COLOR_BLACK
 
 // Aliases
 #define COLOR_PURPLE  COLOR_MAGENTA
@@ -41,8 +42,7 @@
 #define LF 0x0A     // ASCII new line 
 
 // LCD INSTRUCTION CHARACTERS
-//#define LCDON 0x0C  	// LCD initialization command
-#define LCDON 0x0E  	// LCD initialization command
+#define LCDON 0x0C  	// LCD initialization command
 #define LCDCLR 0x01 	// LCD clear display command
 #define TWOLINE 0x38    // LCD 2-line enable command
 #define CURMOV 0xFE 	// LCD cursor move instruction
@@ -60,7 +60,7 @@
 // Type Definitions
 typedef char Color;
 typedef Color C[8][8];
-typedef char UID[UID_SIZE];
+typedef unsigned char UID[UID_SIZE];
 
 // RFID Addresses
 extern int rfidReaderAddress;
@@ -109,6 +109,7 @@ void updateColors(C color);
 void updateLED(int ledAddress, char color);
 void updateSquare(Piece * P, UID id);
 void updateBoard(B curBoard);
+void antennaSelect(void);
 void printUIDArray(UID id, int size);
 char pawnPromote(void);
 

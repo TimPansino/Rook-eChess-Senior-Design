@@ -208,16 +208,14 @@ void updateBoard(B curBoard) {
 	  for (int i = 0; i < 8; i++) { // Readers
   		rfidReaderAddress = i;
   		rfidAntennaAddress = j;
+
+  		antennaSelect();
   		mfrc630_MF_scan(id);
 
-		addr = RFIDTranslationTable[j][i];
-		a = addr >> 3;
-		b = addr & 7;
-  		updateSquare(&curBoard[b][a], id);
-
-  		if (diffUID(EMPTY_UID, id)) {
-  			Print("%c%d: %d\n", 'A' + i, 8 - j, addr);
-  		}
+			addr = RFIDTranslationTable[j][i];
+			a = addr & 7;
+			b = addr >> 3;
+			updateSquare(&curBoard[a][b], id);
 	  }
 	}
 

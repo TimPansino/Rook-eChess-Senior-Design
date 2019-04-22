@@ -20,7 +20,7 @@ int post;
 
 void aiInit(int user_side) {
 	post = 0;
-	ftime_ok = FALSE;
+	ftime_ok = TRUE;
 
 	init_board();
 	gen();
@@ -33,15 +33,17 @@ void aiInit(int user_side) {
 	max_depth = 4;
 
 	if (user_side == LIGHT) {
+		aiParseCommand("new");
 		aiParseCommand("white");
 	}
 	else if (user_side == DARK) {
+		aiParseCommand("new");
 		aiParseCommand("black");
 	}
 }
 
 void aiMakeMove(char* s) {
-    if (side == computer_side) {
+    //if (side == computer_side) {
         think(post);
         if (!pv[0][0].u) {
             computer_side = EMPTY;
@@ -51,7 +53,7 @@ void aiMakeMove(char* s) {
         ply = 0;
         gen();
         print_result();
-    }
+    //}
 }
 
 void aiParseCommand(char* s) {
@@ -69,15 +71,19 @@ void aiParseCommand(char* s) {
         return;
     }
     if (!strcmp(s, "white")) {
+    	/*
         side = LIGHT;
         xside = DARK;
+        */
         gen();
         computer_side = DARK;
         return;
     }
     if (!strcmp(s, "black")) {
+    	/*
         side = DARK;
         xside = LIGHT;
+        */
         gen();
         computer_side = LIGHT;
         return;
@@ -207,6 +213,7 @@ void print_board()
     Print("\n\n   a b c d e f g h\n\n");
 }
 
+/*
 int get_ms()
 {
     struct timeb timebuffer;
@@ -215,6 +222,7 @@ int get_ms()
         ftime_ok = TRUE;
     return (timebuffer.time * 1000) + timebuffer.millitm;
 }
+*/
 
 int parse_move(char *s)
 {
@@ -266,6 +274,7 @@ void print_result()
 {
     int i;
 
+    return;
     /* is there a legal move? */
     for (i = 0; i < first_move[1]; ++i)
         if (makemove(gen_dat[i].m.b)) {
