@@ -789,7 +789,9 @@ int validMoves(B board, M moves, int row, int col) {
         copyBoard(newBoard, board);
         movePiece(newBoard, row, col, i, j);
         if (checkStatus(newBoard, side)) {
-          moves[j][i] = 0;
+          if (moves[j][i] != 10) {
+        	  moves[j][i] = 0;
+          }
         }
         else {
           ret += 1;

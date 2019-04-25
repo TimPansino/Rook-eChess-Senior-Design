@@ -107,8 +107,9 @@
 #define     RFID_SPI2_NSS_7             GPIOC,     GPIO_PIN_6
 
 // Constants
-#define 	  DISABLE_PRINT               0
-#define		  LED_DEMO					  0
+#define 	  DISABLE_PRINT               1
+#define		  LED_DEMO					  1
+#define 	  SKIP_SETUP_HELP			  0
 
 /* USER CODE END PD */
 
@@ -155,6 +156,7 @@ int curSide = White;
 int aiSide = 0;
 int curTime = 0;
 int aiMovedFlag = 0;
+char aiMove[10];
 
 // Buttons
 int prevButton[5] = {0};
@@ -194,6 +196,7 @@ int checkButtons(void);
 void moveToLCD(void);
 void moveStrToLCD(char* s);
 void strToMenu(char* s, char* d);
+void boardSetup(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -208,8 +211,6 @@ void strToMenu(char* s, char* d);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-		int color;
-		uint8_t c = 0x00;
 
   /* USER CODE END 1 */
 
@@ -239,46 +240,46 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(1000);
 
-		// Initialize Pins
-		HAL_GPIO_WritePin(STATUS_LED, 0);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_0, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_1, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_2, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_3, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_4, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_5, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_6, 1);
-		HAL_GPIO_WritePin(RFID_SPI2_NSS_7, 1);
+	// Initialize Pins
+	HAL_GPIO_WritePin(STATUS_LED, 0);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_0, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_1, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_2, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_3, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_4, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_5, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_6, 1);
+	HAL_GPIO_WritePin(RFID_SPI2_NSS_7, 1);
 
-		// Init Uart
-		Print(CLEAR_TERMINAL);
-		Print("UART Initialized.\n");
+	// Init Uart
+	Print(CLEAR_TERMINAL);
+	Print("UART Initialized.\n");
 
-		// Init Buttons
-		buttonInit();
-		Print("Buttons Initialized.\n");
+	// Init Buttons
+	buttonInit();
+	Print("Buttons Initialized.\n");
 
-		// Init LCD
-		LCDInit();
-		Print("LCD Initialized\n");
+	// Init LCD
+	LCDInit();
+	Print("LCD Initialized\n");
 
-		// Setup RFID Readers
-		RFIDInit();
-		Print("RFID Readers Initialized\n");
+	// Setup RFID Readers
+	RFIDInit();
+	Print("RFID Readers Initialized\n");
 
-		// Setup LEDs
-		LEDInit();
-		Print("LEDs Initialized\n");
+	// Setup LEDs
+	LEDInit();
+	Print("LEDs Initialized\n");
 
-		// Chess Initialization
-		chessInit(0);
-		Print("Chess Control and AI Initialized.\n");
+	// Chess Initialization
+	chessInit(0);
+	Print("Chess Control and AI Initialized.\n");
 
-		// Setup Board State
-		blankBoard(curBoard);
+	// Setup Board State
+	blankBoard(curBoard);
 
-		// Start Timer
-		HAL_TIM_Base_Start_IT(&TIMER_HANDLE);
+	// Start Timer
+	HAL_TIM_Base_Start_IT(&TIMER_HANDLE);
 
   /* USER CODE END 2 */
 
@@ -296,24 +297,22 @@ int main(void)
 
 			mainMenu();
 			buttonInit();
+			boardSetup();
 			moveToLCD();
 		}
 
 		// Main Loop
 		RFIDInit();
 		Print("Beginning Scan...\n");
+		HAL_GPIO_WritePin(STATUS_LED, 1);
 		updateBoard(curBoard);
+		HAL_GPIO_WritePin(STATUS_LED, 0);
 		Print("Scan Complete.\n");
 		Print(CLEAR_TERMINAL);
 		printBoard(curBoard);
 		chessMain();
 		printColors(colors);
 		updateColors(colors);
-	    //moveToLCD();
-
-		// Delay
-		//HAL_Delay(1000);
-
   }
   /* USER CODE END 3 */
 }
@@ -670,12 +669,12 @@ void chessInit(char input) {
 }
 
 int chessMain(void) {
-	char s[10];
 	blankColors(colors);
 
 	Print("Side: %d\n", curSide);
 	status = gameStatus(prevBoard, curSide);
 	if (status == 2) {
+      writeLCDMessage("   Stalemate    ", "  It's a draw.  ");
 	  for (int j = 0; j < 4; j++) {
 	    for (int i = 0; i < 8; i++) {
 	      colors[i][j] = COLOR_RED;
@@ -690,6 +689,7 @@ int chessMain(void) {
 	}
 	else if (status == 3) {
 	  if (curSide == Black) {
+		writeLCDMessage("   Checkmate    ", "  White Wins!   ");
 	    for (int j = 0; j < 4; j++) {
 	      for (int i = 0; i < 8; i++) {
 	        colors[i][j] = COLOR_GREEN;
@@ -702,6 +702,7 @@ int chessMain(void) {
 	    }
 	  }
 	  else if (curSide == White) {
+		writeLCDMessage("   Checkmate    ", "  Black Wins!   ");
 	    for (int j = 0; j < 4; j++) {
 	      for (int i = 0; i < 8; i++) {
 	        colors[i][j] = COLOR_RED;
@@ -728,7 +729,8 @@ int chessMain(void) {
 				curSide = switchSide(curSide);
 				aiMovedFlag = 0;
 				blankColors(colors);
-				moveToLCD();
+				//moveToLCD();
+				moveStrToLCD(aiMove);
         	}
         	else {
             	diffBoards(prevAIBoard, prevBoard, diff1);
@@ -743,21 +745,21 @@ int chessMain(void) {
         	}
         }
         else {
-			s[0] = '\0';
-			aiMakeMove(s);
+        	aiMove[0] = '\0';
+			aiMakeMove(aiMove);
 			//Print("USER SIDE: %d\n", computer_side);
-			if (strlen(s) > 0) {
-				Print("AI Move: %s\n", s);
-				strToMove(s, &curMove);
+			if (strlen(aiMove) > 0) {
+				Print("AI Move: %s\n", aiMove);
+				strToMove(aiMove, &curMove);
 				copyBoard(prevAIBoard, prevBoard);
 				makeMove(prevBoard, curMove);
-				if (s[4] != '\0') { // Pawn promote
-					if ((s[4] >= 'a') && (s[4] <= 'z')) s[4] += 'A' - 'a';
-					prevBoard[curMove.destCol][curMove.destRow].promotion = s[4];
-					s[4] = '\0';
+				if (aiMove[4] != '\0') { // Pawn promote
+					if ((aiMove[4] >= 'a') && (aiMove[4] <= 'z')) aiMove[4] += 'A' - 'a';
+					prevBoard[curMove.destCol][curMove.destRow].promotion = aiMove[4];
+					aiMove[4] = '\0';
 				}
 				aiMovedFlag = 1;
-				moveStrToLCD(s);
+				moveStrToLCD(aiMove);
 			}
 			else {
 				Print("Error: AI Failed to move.\n");
@@ -769,7 +771,7 @@ int chessMain(void) {
 		parseState(curBoard, prevBoard, curSide, colors, &curMove);
 		if (buttonFlag[0] || buttonFlag[1]) {
 			if (((buttonFlag[0]) && (curSide == White)) || ((buttonFlag[1]) && (curSide == Black))) {
-				if (verifyMove(prevBoard, &curMove)) { // TODO add flag for button here
+				if (verifyMove(prevBoard, &curMove)) {
 					char promo = '\0';
 
 					makeMove(prevBoard, curMove);
@@ -780,11 +782,11 @@ int chessMain(void) {
 						}
 					}
 
-					moveToStr(&curMove, s, promo);
-					Print("%d\n", s);
-					aiParseCommand(s);
+					moveToStr(&curMove, aiMove, promo);
+					Print("%d\n", aiMove);
+					aiParseCommand(aiMove);
 					curSide = switchSide(curSide);
-					moveStrToLCD(s);
+					moveStrToLCD(aiMove);
 				}
 			}
 
@@ -940,7 +942,6 @@ void LCDInit(void) {
 	writeLCDInstruction(LCDCLR);
 
 	writeLCDMessage("Booting...", "Enjoy the lights");
-
 }
 
 void mfrc630_SPI_transfer(uint8_t* tx, uint8_t* rx, uint16_t len){
@@ -1105,16 +1106,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         curButton[3] = HAL_GPIO_ReadPin(BUTTON_4);
         curButton[4] = HAL_GPIO_ReadPin(BUTTON_5);
 
-        if (curButton[4] && curButton[2]) {
-        	resetFlag = 1;
-        }
-
         // Set flags and previous state
         for (int i = 0; i < 5; i++) {
         	if ((curButton[i] == 1) && (prevButton[i] == 0)) {
         		buttonFlag[i] = 1;
         	}
         	prevButton[i] = curButton[i];
+        }
+
+        // Reset Flag - both left and right pushed at the same time
+        if (curButton[4] && curButton[2] && (buttonFlag[2] || buttonFlag[4])) {
+        	resetFlag = 1;
         }
     }
 }
@@ -1233,14 +1235,17 @@ int checkButtons(void) {
 
 
 void moveStrToLCD(char* s) {
-	for (int i = 0; i < 5; i++) prevMove[i] = ' ';
-	prevMove[5] = s[0] + 'A' - 'a';
-	prevMove[6] = s[1];
-	prevMove[7] = '-';
-	prevMove[8] = s[2] + 'A' - 'a';
-	prevMove[9] = s[3];
-	prevMove[10] = '\0';
-	for (int i = 11; i < 16; i++) prevMove[i] = ' ';
+	if (aiMovedFlag) {
+		strcpy(prevMove, "AI's Move: ");
+	}
+	else {
+		strcpy(prevMove, "Last Move: ");
+	}
+	prevMove[11] = s[0] + 'A' - 'a';
+	prevMove[12] = s[1];
+	prevMove[13] = '-';
+	prevMove[14] = s[2] + 'A' - 'a';
+	prevMove[15] = s[3];
 	prevMove[16] = '\0';
 
 	moveToLCD();
@@ -1285,6 +1290,102 @@ char pawnPromote(void) {
 
 	return type;
 }
+
+void boardSetup(void) {
+	B blank;
+	B setup;
+	char missing;
+	M diff;
+	M diffMissing;
+
+	if (SKIP_SETUP_HELP) return; // Global override
+
+	buttonFlag[3] = 0;
+	blankBoard(blank);
+	defaultBoard(setup);
+	blankColors(colors);
+	while (1) {
+		// Scan
+		RFIDInit();
+		updateBoard(curBoard);
+		diffBoards(curBoard, setup, diff);
+		diffBoards(curBoard, blank, diffMissing);
+		updateColors(colors);
+		printBoard(curBoard);
+
+		// Largest Missing Piece
+		missing = 0;
+		for (int j = 0; j < 8; j++) {
+			for (int i = 0; i < 8; i++) {
+				if (diff[j][i]) {
+					if ((setup[j][i].type == 'K') || (missing == 'K')) {
+						missing = 'K';
+					}
+					else if ((setup[j][i].type == 'Q') || (missing == 'Q')) {
+						missing = 'Q';
+					}
+					else if ((setup[j][i].type == 'B') || (missing == 'B')) {
+						missing = 'B';
+					}
+					else if ((setup[j][i].type == 'N') || (missing == 'N')) {
+						missing = 'N';
+					}
+					else if ((setup[j][i].type == 'R') || (missing == 'R')) {
+						missing = 'R';
+					}
+					else if ((setup[j][i].type == 'P') || (missing == 'P')) {
+						missing = 'P';
+					}
+				}
+			}
+		}
+		if (!missing) break;
+
+		// LCD Message
+		switch(missing) {
+		case 'K':
+			writeLCDMessage("< White  Black >", "  Place Kings   ");
+			break;
+		case 'Q':
+			writeLCDMessage("< White  Black >", "  Place Queens  ");
+			break;
+		case 'B':
+			writeLCDMessage("< White  Black >", " Place Bishops  ");
+			break;
+		case 'N':
+			writeLCDMessage("< White  Black >", " Place Knights  ");
+			break;
+		case 'R':
+			writeLCDMessage("< White  Black >", "  Place Rooks   ");
+			break;
+		case 'P':
+			writeLCDMessage("< White  Black >", "  Place Pawns   ");
+			break;
+		default:
+			break;
+		}
+
+		// Board Colors
+		blankColors(colors);
+		for (int j = 0; j < 8; j++) {
+			for (int i = 0; i < 8; i++) {
+				if (diff[j][i] && diffMissing[j][i]) {
+					colors[j][i] = COLOR_ERROR;
+				}
+				else if (diff[j][i] && setup[j][i].type == missing) {
+					colors[j][i] = COLOR_ACCEPTED;
+				}
+			}
+		}
+	}
+
+	blankColors(colors);
+	updateColors(colors);
+	writeLCDInstruction(LCDCLR);
+	return;
+}
+
+
 /* USER CODE END 4 */
 
 /**
