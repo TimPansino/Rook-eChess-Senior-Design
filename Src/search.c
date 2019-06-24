@@ -1,10 +1,10 @@
 /*
- * seach.c
+ *	SEARCH.C
+ *	Tom Kerrigan's Simple Chess Program (TSCP)
  *
- *  Created on: Feb 28, 2019
- *      Author: Mitchell
+ *	Copyright 1997 Tom Kerrigan
  */
-
+ 
 #include <stdio.h>
 #include <string.h>
 #include "defs.h"

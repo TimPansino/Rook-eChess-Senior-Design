@@ -20,6 +20,8 @@ This project was completed as a Purdue ECE49022 senior design project. To see ou
 # Licenses
 This repository contains copyrighted third party software. Please read this section in entirety before attempting to use this project and obtain any required permissions before attempting to sell, copy, or create derivative works of this project.
 
+Additionally, the relevant license has been added to the header of each file. Please check the file's header if you're unsure about its licensing.
+
 ### Our Software
 Our software is licensed under the MIT license located in the file LICENSE.md.
 

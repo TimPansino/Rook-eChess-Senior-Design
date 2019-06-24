@@ -1,3 +1,10 @@
+/*
+ *	AI.C (Originally MAIN.C)
+ *	Tom Kerrigan's Simple Chess Program (TSCP)
+ *
+ *	Copyright 1997 Tom Kerrigan
+ */
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

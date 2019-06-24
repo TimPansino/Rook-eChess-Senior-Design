@@ -5,7 +5,6 @@
  *	Copyright 1997 Tom Kerrigan
  */
 
-
 #include <string.h>
 #include "defs.h"
 #include "data.h"
