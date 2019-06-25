@@ -1,5 +1,5 @@
 # The Rook-eChess Board
-![Alt text](CoverPhoto.jpeg?raw=true)
+![Alt text](Photos/CoverPhoto.jpeg?raw=true)
 
 The Rook-eChess board is a light up chess game board that teaches beginners how to play the game. It allows a person to play against a friend or a beginner AI, while experiencing the advantages of chess software (like displaying legal moves) and the advantages of a physical chess board (like seeing the board in 3D space). When playing in one player mode, the provided AI will allow a beginner to practice using a physical board before taking on a human opponent. In two player mode, the board will not inhibit the usual flow of the game while conveniently coaching the new player.
 
@@ -57,3 +57,6 @@ File List:
 * Inc/defs.h
 * Inc/protos.h
 * book.txt
+
+# Poster
+![Alt text](Photos/Poster.jpeg?raw=true)
