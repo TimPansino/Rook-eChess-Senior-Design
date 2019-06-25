@@ -1,3 +1,9 @@
+/*
+ *	BOOK_CONTENTS.H (Originally BOOK.TXT)
+ *	Tom Kerrigan's Simple Chess Program (TSCP)
+ *
+ *	Copyright 1997 Tom Kerrigan
+ */
 #ifndef BOOK_CONTENTS_H
 #define BOOK_CONTENTS_H
 

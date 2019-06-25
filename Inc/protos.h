@@ -1,8 +1,8 @@
 /*
- * protos.h
+ *	PROTOS.H
+ *	Tom Kerrigan's Simple Chess Program (TSCP)
  *
- *  Created on: Feb 27, 2019
- *      Author: Mitchell
+ *	Copyright 1997 Tom Kerrigan
  */
 
 #ifndef PROTOS_H_

@@ -51,6 +51,7 @@ File List:
 * Src/book.txt
 * Src/eval.c
 * Src/search.c
+* Inc/ai.h
 * Inc/book_contents.h
 * Inc/data.h
 * Inc/defs.h

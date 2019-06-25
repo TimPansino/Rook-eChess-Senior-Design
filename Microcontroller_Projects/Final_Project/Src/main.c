@@ -1,4 +1,26 @@
 /* USER CODE BEGIN Header */
+/*   MIT License
+*
+*    Copyright (c) 2019 Timothy Pansino, Adam Behnke, Zachary Neumann, Mitchell Keeney
+*
+*    Permission is hereby granted, free of charge, to any person obtaining a copy
+*    of this software and associated documentation files (the "Software"), to deal
+*    in the Software without restriction, including without limitation the rights
+*    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*    copies of the Software, and to permit persons to whom the Software is
+*    furnished to do so, subject to the following conditions:
+*
+*    The above copyright notice and this permission notice shall be included in all
+*    copies or substantial portions of the Software.
+*
+*    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*    SOFTWARE.
+*/
 /**
   ******************************************************************************
   * @file           : main.c
@@ -327,11 +349,11 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-  /**Configure the main internal regulator output voltage 
+  /**Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -347,7 +369,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -383,7 +405,7 @@ static void MX_RTC_Init(void)
   /* USER CODE BEGIN RTC_Init 1 */
 
   /* USER CODE END RTC_Init 1 */
-  /**Initialize RTC Only 
+  /**Initialize RTC Only
   */
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
@@ -575,7 +597,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(RFID_NSS_2_GPIO_Port, RFID_NSS_2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, RFID_NSS_0_Pin|RFID_NSS_1_Pin|RFID_NSS_7_Pin|RFID_NSS_6_Pin 
+  HAL_GPIO_WritePin(GPIOC, RFID_NSS_0_Pin|RFID_NSS_1_Pin|RFID_NSS_7_Pin|RFID_NSS_6_Pin
                           |RFID_NSS_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -585,16 +607,16 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, RFID_ANT_ADDR_0_Pin|RFID_ANT_ADDR_1_Pin|RFID_ANT_ADDR_2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|LED_BLUE_Pin|RFID_NSS_5_Pin|RFID_NSS_4_Pin 
-                          |LED_WEN_Pin|LED_ADDR_0_Pin|LED_ADDR_1_Pin|LED_ADDR_2_Pin 
+  HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|LED_BLUE_Pin|RFID_NSS_5_Pin|RFID_NSS_4_Pin
+                          |LED_WEN_Pin|LED_ADDR_0_Pin|LED_ADDR_1_Pin|LED_ADDR_2_Pin
                           |LED_ADDR_3_Pin|LED_ADDR_4_Pin|LED_ADDR_5_Pin|LED_RED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : BUTTON_1_Pin BUTTON_2_Pin BUTTON_3_Pin BUTTON_4_Pin 
+  /*Configure GPIO pins : BUTTON_1_Pin BUTTON_2_Pin BUTTON_3_Pin BUTTON_4_Pin
                            BUTTON_5_Pin */
-  GPIO_InitStruct.Pin = BUTTON_1_Pin|BUTTON_2_Pin|BUTTON_3_Pin|BUTTON_4_Pin 
+  GPIO_InitStruct.Pin = BUTTON_1_Pin|BUTTON_2_Pin|BUTTON_3_Pin|BUTTON_4_Pin
                           |BUTTON_5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -607,9 +629,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(RFID_NSS_2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RFID_NSS_0_Pin RFID_NSS_1_Pin RFID_NSS_7_Pin RFID_NSS_6_Pin 
+  /*Configure GPIO pins : RFID_NSS_0_Pin RFID_NSS_1_Pin RFID_NSS_7_Pin RFID_NSS_6_Pin
                            RFID_NSS_3_Pin */
-  GPIO_InitStruct.Pin = RFID_NSS_0_Pin|RFID_NSS_1_Pin|RFID_NSS_7_Pin|RFID_NSS_6_Pin 
+  GPIO_InitStruct.Pin = RFID_NSS_0_Pin|RFID_NSS_1_Pin|RFID_NSS_7_Pin|RFID_NSS_6_Pin
                           |RFID_NSS_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -630,11 +652,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_GREEN_Pin LED_BLUE_Pin RFID_NSS_5_Pin RFID_NSS_4_Pin 
-                           LED_WEN_Pin LED_ADDR_0_Pin LED_ADDR_1_Pin LED_ADDR_2_Pin 
+  /*Configure GPIO pins : LED_GREEN_Pin LED_BLUE_Pin RFID_NSS_5_Pin RFID_NSS_4_Pin
+                           LED_WEN_Pin LED_ADDR_0_Pin LED_ADDR_1_Pin LED_ADDR_2_Pin
                            LED_ADDR_3_Pin LED_ADDR_4_Pin LED_ADDR_5_Pin LED_RED_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_BLUE_Pin|RFID_NSS_5_Pin|RFID_NSS_4_Pin 
-                          |LED_WEN_Pin|LED_ADDR_0_Pin|LED_ADDR_1_Pin|LED_ADDR_2_Pin 
+  GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_BLUE_Pin|RFID_NSS_5_Pin|RFID_NSS_4_Pin
+                          |LED_WEN_Pin|LED_ADDR_0_Pin|LED_ADDR_1_Pin|LED_ADDR_2_Pin
                           |LED_ADDR_3_Pin|LED_ADDR_4_Pin|LED_ADDR_5_Pin|LED_RED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -1409,7 +1431,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
