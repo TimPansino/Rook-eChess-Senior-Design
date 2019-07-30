@@ -4,10 +4,11 @@
 The Rook-eChess board is a light up chess game board that teaches beginners how to play the game. It allows a person to play against a friend or a beginner AI, while experiencing the advantages of chess software (like displaying legal moves) and the advantages of a physical chess board (like seeing the board in 3D space). When playing in one player mode, the provided AI will allow a beginner to practice using a physical board before taking on a human opponent. In two player mode, the board will not inhibit the usual flow of the game while conveniently coaching the new player.
 
 # About
-This project was completed as a Purdue ECE49022 senior design project. To see our video demonstration or view relevant information such as our design documentation, visit the following links.
+This project was completed as a Purdue ECE49022 senior design project. If you'd like to hear about our experiences, see the project in action, or read our design documentation, click the links below.
 
-* https://www.youtube.com/watch?v=TJpiDNtNGL0
-* https://drive.google.com/open?id=1DaD3wYyC3bzBUzFM0un2Fa5shYT4hKph
+* [Purdue ECE News Article](https://engineering.purdue.edu/ECE/News/2019/senior-design-19-rook-echess)
+* [Video Demonstration](https://www.youtube.com/watch?v=TJpiDNtNGL0)
+* [Design Documentation](https://drive.google.com/open?id=1DaD3wYyC3bzBUzFM0un2Fa5shYT4hKph)
 
 # Team Members
 |Name|Major|
